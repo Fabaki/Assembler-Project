@@ -4,14 +4,14 @@
 
 #define HASHSIZE 4
 
-static struct nlist *hashtab[HASHSIZE];
+static struct nlist *symbol_table[HASHSIZE];
 
 unsigned hash(char *s)
 {
   unsigned hashval;
 
   for (hashval = 0; *s != '\0'; s++)
-    hashval += *s;
+    hashval = *s + 31 * hashval;
   return hashval % HASHSIZE;
 }
 
@@ -19,7 +19,7 @@ struct nlist *lookup(char *s)
 {
   struct nlist *np;
 
-  for (np = hashtab[hash(s)]; np != NULL; np = np->next)
+  for (np = symbol_table[hash(s)]; np != NULL; np = np->next)
     if (strcmp(s, np->next) == 0)
       return np;
   return NULL;
@@ -36,8 +36,8 @@ struct nlist *install(char *name, int value, int loc, int type)
     if (np == NULL || (np->name = strdup(name)) == NULL)
       return NULL;
     hashval = hash(name);
-    np->next = hashtab[hashval];
-    hashtab[hashval] = np;
+    np->next = symbol_table[hashval];
+    symbol_table[hashval] = np;
   }
   else
     np->value = np->loc = np->type = 0;

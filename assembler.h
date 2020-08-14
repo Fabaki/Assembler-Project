@@ -20,7 +20,10 @@ struct nlist
 struct nlist *lookup(char *s);
 struct nlist *install(char *name, int value, int loc, int type);
 
-int add_error(int line, char *e);
+int get_line(char c[], int index);
+int get_word(char c[], int index);
+
+int add_error(char *e);
 
 int first_pass();
 
