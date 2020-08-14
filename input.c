@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "assembler.h"
 
 /*
@@ -23,25 +24,40 @@ char code[] = \
 "      .data -100\n"
 "K:    .data 31\n";
 
-void readfile(char f[])
+void openfile(FILE *file, char *fname)
 {
-    FILE *input;
+  char filename[strlen(fname)+3];
+  char ex[] = ".as";
 
-    if ((input = fopen(f + ".as", "r")))
-    {
-
-    }
+  strcat(filename, fname);
+  strcat(filename, ex);
+  file = fopen(filename, "r");
 }
 
-int line()
-{
-
-}
-
-int getline(char *line, int max)
+int get_line(char *line, int max, FILE *file)
 {
   if (fgets(line, max, stdin) == NULL)
     return 0;
   else
     return strlen(line);
+}
+
+int next_word(char *word, int word_len, char *line, int word_index)
+{
+  int index_backup = word_index;
+  word_len--;
+  while (isspace(line[word_index++]))
+    ;
+  if (line[word_index] != EOF)
+    *word++ = line[word_index];
+  if (!isalpha(line[word_index]))
+  {
+    *word = '\0';
+    return -1;
+  }
+  for ( ; --word_len > 0; word++)
+    if (!isalnum(*word = line[word_index++]))
+      break;
+  *word = '\0';
+  return word_index - index_backup;
 }
