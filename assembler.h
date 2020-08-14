@@ -6,6 +6,7 @@
 */
 enum symbl_loc { DATA, CODE };
 enum symbl_type { ENTRY, EXTERNAL };
+enum bool { FALSE, TRUE };
 
 struct nlist
 {
@@ -18,6 +19,8 @@ struct nlist
 
 struct nlist *lookup(char *s);
 struct nlist *install(char *name, int value, int loc, int type);
+
+int add_error(int line, char *e);
 
 int first_pass();
 
