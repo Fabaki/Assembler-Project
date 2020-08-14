@@ -23,15 +23,25 @@ char code[] = \
 "      .data -100\n"
 "K:    .data 31\n";
 
-int getline(char s[], int lim)
+void readfile(char f[])
 {
-  int c, i;
+    FILE *input;
 
-  i = 0;
-  while (--lim > 0 && (c=getchar()) != EOF && c != '\n')
-    s[i++] = c;
-  if (c == '\n')
-    s[i++] = c;
-  s[i] = '\0';
-  return i;
+    if ((input = fopen(f + ".as", "r")))
+    {
+
+    }
+}
+
+int line()
+{
+
+}
+
+int getline(char *line, int max)
+{
+  if (fgets(line, max, stdin) == NULL)
+    return 0;
+  else
+    return strlen(line);
 }

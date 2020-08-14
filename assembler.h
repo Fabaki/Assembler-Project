@@ -24,4 +24,6 @@ int add_error(int line, char *e);
 
 int first_pass();
 
+void checkfile(char f[]);
+
 #endif
