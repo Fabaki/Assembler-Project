@@ -15,45 +15,52 @@ int first_pass(FILE *file)
 
   while ((line = get_line(line, 82, file)) != EOF)
   {
-    int word_index;
-    char word[32];
-
-    int next_word_len = next_word(word, 32, line, word_index);
-    if (next_word_len == -1)
-    {
-      add_error(line, "un-alphanumerical character found");
-      continue;
-    }
-    word_index += next_word_len;
-
-    if (word[0] == '.')
-      parse_memory(word);
-    else if (word[next_word_len - 1] == ':')
-      parse_symbol(word);
-    else
-      parse_command(word);
+    
   }
 
   return rtn;
 }
 
-int parse_symbol(char *s);
-int parse_memory(char *m);
-int parse_command(char *c);
+int parse_symbol(char *line[], int line_len);
+int parse_memory(char *line[], int line_len, int symbol);
+int parse_command(char *line[], int line_len, int symbol);
 
 int parse_symbol(char *s)
 {
+  int i;
+
   if (!isalpha(s[0]))
     return 0;
-  
+  for (i = 1; isalnum(s[i]); i++)
+    ;
+  if (s[i] != ':') /* checking if all label chars are alphanumeric */
+    return 0;
+  if (lookup(s) != NULL)
+    return -1;
+  return 1;
 }
 
-int parse_memory(char *c[], int symbol)
+int parse_memory(char *m, int symbol)
 {
+  int word_index = 0;
+  char buffer[8];
+  word_index += next_word(buffer, 8, m, word_index);
+  if (strcmp(buffer, ".data") == 0)
+  {
 
+  }
+  else if (strcmp(buffer, ".string") == 0)
+  {
+
+  }
+  else if (strcmp(buffer, ".entry") == 0)
+  {
+
+  }
+  else if (strcmp(buffer, ".extern") == 0)
 }
 
-int parse_command(char *c[], int symbol)
+int parse_command(char *c, int symbol)
 {
 
 }

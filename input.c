@@ -36,28 +36,77 @@ void openfile(FILE *file, char *fname)
 
 int get_line(char *line, int max, FILE *file)
 {
-  if (fgets(line, max, stdin) == NULL)
+  if (fgets(line, max, file) == NULL)
     return 0;
   else
     return strlen(line);
 }
 
-int next_word(char *word, int word_len, char *line, int word_index)
+int count_line_words(char *line, int line_limit)
 {
-  int index_backup = word_index;
-  word_len--;
-  while (isspace(line[word_index++]))
-    ;
-  if (line[word_index] != EOF)
-    *word++ = line[word_index];
-  if (!isalpha(line[word_index]))
+  int i = 0;
+  int words = 0;
+  while (line[i] != EOF && line[i] != '\n' && line[i] != '\0' && line_limit > 0)
   {
-    *word = '\0';
-    return -1;
+    while (isspace(line[i]) && line_limit--)
+      i++;
+
+    if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)
+      return words;
+
+    while ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
+      i++;
+
+    if ((line[i] == '\0' || line[i] == EOF || line[i] == '\n') &&  (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]))
+      ++words;
+
+    if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)
+      return words;
+
+    if (!isspace(line[i]))
+      return -1; /* checking that we stopped because of a space, not because of a non-alphanumeric character */
   }
-  for ( ; --word_len > 0; word++)
-    if (!isalnum(*word = line[word_index++]))
-      break;
-  *word = '\0';
-  return word_index - index_backup;
+
+  return words;
+}
+
+int get_line_words(char *line, int line_limit, char *buffer[])
+{
+  int i = 0;
+  int words = 0;
+  while (line[i] != EOF && line[i] != '\n' && line[i] != '\0' && line_limit > 0)
+  {
+    while (isspace(line[i]) && line_limit--)
+      i++;
+
+    if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)
+      return words;
+
+    if ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
+    {
+      buffer[words] = &line[i];
+      i++;
+    }
+
+    while ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
+      i++;
+
+    char backup = line[i];
+    line[i] = '\0';
+    char *newword = (char *) malloc(strlen(buffer[words])+1);
+    strcpy(newword, buffer[words]);
+    buffer[words] = newword;
+    line[i] = backup;
+
+    if ((line[i] == '\0' || line[i] == EOF || line[i] == '\n') && (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]))
+      ++words;
+
+    if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)
+      return words;
+
+    if (!isspace(line[i]))
+      return -1; /* checking that we stopped because of a space, not because of a non-alphanumeric character */
+  }
+
+  return words;
 }

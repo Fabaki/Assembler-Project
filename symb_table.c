@@ -40,7 +40,8 @@ struct nlist *install(char *name, int value, int loc, int type)
     symbol_table[hashval] = np;
   }
   else
-    np->value = np->loc = np->type = 0;
+    return NULL;
+
   np->value = value;
   np->loc = loc;
   np->type = type;
