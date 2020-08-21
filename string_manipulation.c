@@ -44,3 +44,21 @@ int strsplit(char word[], int len, char splitter, char word1[], char word2[])
 
   return 0;
 }
+
+int *stoi(char s[])
+{
+  int i, result, sign;
+
+  sign = (s[i] == '-') ? -1 : 1;
+  if (s[i] == '+' || s[i] == '-')
+    i++;
+  for (i = 0; i < strlen(s); i++)
+  {
+    if (s[i] < 48 || s[i] > 57)
+      return NULL;
+    result = 10 * result + (s[i] - '0');
+  }
+  result *= sign;
+
+  return &result;
+}

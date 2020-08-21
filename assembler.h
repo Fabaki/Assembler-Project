@@ -33,17 +33,30 @@ char *no_oprand[] = {
 };
 const int no_oprand_len = 2;
 
+char *registers[] = {
+  "r0",
+  "r1",
+  "r2",
+  "r3",
+  "r4",
+  "r5",
+  "r6",
+  "r7"
+};
+const int registers_len = 8;
+
 struct nlist
 {
   struct nlist *next;
   char *name;
   int value;
-  unsigned int loc : 1;
-  unsigned int type : 1;
+  unsigned int loc : 1; /* Location: Code (1) or data (0) */
+  unsigned int has_type : 1; /* Is there a type? */
+  unsigned int type : 1; /* Entry (0) or External (1) */
 };
 
-struct nlist *lookup(char *s);
-struct nlist *install(char *name, int value, int loc, int type);
+struct nlist *lookup(char *name);
+struct nlist *install(char *name, int value, int loc, int has_type, int type);
 
 struct int24
 {
@@ -61,11 +74,15 @@ int get_line_words(char *line, int line_limit, char *buffer[]);
 int inarray(char *word, char *array[], int array_length);
 int instring(char c, char *word, int word_length);
 int strsplit(char word[], int len, char splitter, char word1[], char word2[]);
+int *stoi(char s[]);
 
 int add_error(int line, char *e);
 
 int first_pass(FILE *file);
 
 void checkfile(char f[]);
+
+unsigned char *get_opcode_funct(char *cmd);
+long long decimal_to_binary(int n);
 
 #endif

@@ -10,21 +10,31 @@ struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, i
   struct int24 *np;
   unsigned result;
 
-  np = (struct int24 *) malloc(sizeof(*np));
+  np = (struct int24 *) malloc(sizeof(struct int24));
   if (np == NULL)
     return NULL;
 
-  struct int24 *first_func = cd == 0 ? first_code : first_data;
-  if (first_func == NULL)
-    first_func = np;
+  struct int24 *first_func;
+  if (cd == 0)
+  {
+    if (first_code == NULL)
+      first_code = np;
+    first_func = first_code;
+  }
   else
   {
+    if (first_data == NULL)
+      first_data = np;
+    first_func = first_data;
+  }
+
+  if (first_func != np)
+  {
     struct int24 *p = first_func;
-    for (; p->next != NULL; p++)
+    while (p->next != NULL)
       p = p->next;
     p->next = np;
   }
-
 
   np->next = NULL;
 
@@ -35,12 +45,11 @@ struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, i
   return np;
 }
 
-struct int24 *find_word_at(int ic, int cd)
+struct int24 *find_word_at(unsigned int ic, int cd)
 {
-  if (ic > 100)
-    ic -= 100;
-  struct int24 *p = cd == 0 ? first_code : first_data;
+  struct int24 *p = (cd == 0 ? first_code : first_data);
   for (; ic > 0; ic--)
-    p++;
+    p = p->next;
+
   return p;
 }

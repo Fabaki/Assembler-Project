@@ -15,17 +15,17 @@ unsigned hash(char *s)
   return hashval % HASHSIZE;
 }
 
-struct nlist *lookup(char *s)
+struct nlist *lookup(char *name)
 {
   struct nlist *np;
 
-  for (np = symbol_table[hash(s)]; np != NULL; np = np->next)
-    if (strcmp(s, np->next) == 0)
+  for (np = symbol_table[hash(name)]; np != NULL; np = np->next)
+    if (strcmp(name, np->next) == 0)
       return np;
   return NULL;
 }
 
-struct nlist *install(char *name, int value, int loc, int type)
+struct nlist *install(char *name, int value, int loc, int has_type, int type)
 {
   struct nlist *np;
   unsigned hashval;
@@ -44,6 +44,7 @@ struct nlist *install(char *name, int value, int loc, int type)
 
   np->value = value;
   np->loc = loc;
+  np->has_type = has_type;
   np->type = type;
   return np;
 }

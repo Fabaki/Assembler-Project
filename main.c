@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include "assembler.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     openfile(file, argv[i]);
     if (first_pass(file))
       second_pass(file); /* add */
-    
+
   }
   return 0;
 }
