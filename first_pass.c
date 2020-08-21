@@ -2,7 +2,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "assembler.h"
-#define LINE_LEN 82
 
 int ic = 100, dc = 0;
 
@@ -26,7 +25,7 @@ int first_pass(FILE *file)
     get_line_words(line, LINE_LEN, words);
 
     int first_word_len = strlen(words[0]);
-    if (*(words[0] + first_word_len - 1) == ':')
+    if (*(words[0] + first_word_len - 1) == ':') // if symbol
       symbol = TRUE;
     if (strcmp(words[symbol], ".data") == 0)
     {

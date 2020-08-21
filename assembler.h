@@ -5,6 +5,8 @@ enum symbl_loc { DATA, CODE };
 enum symbl_type { ENTRY, EXTERNAL };
 enum bool { FALSE, TRUE };
 
+#define LINE_LEN 82
+
 char *two_oprands[] = {
   "mov",
   "cmp",
@@ -68,4 +70,7 @@ int first_pass(FILE *file);
 
 void checkfile(char f[]);
 
+int second_pass(FILE *file);
+
+void create_output(int anyEntries, int anyExterns);
 #endif
