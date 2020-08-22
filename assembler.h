@@ -53,6 +53,21 @@ struct int24
   unsigned int data : 24;
 };
 
+struct extpair
+{
+  int val;
+  char *name;
+};
+typedef struct extpair extpair;
+
+struct entpair /* entpair is probably temp, I still don't know how looping
+through the symb table would exactly turn out, and if this is useful or not */
+{
+  int val;
+  char *name;
+};
+typedef struct entpair entpair; 
+
 struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, int cd);
 
 void openfile(FILE *file, char *fname);

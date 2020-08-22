@@ -28,7 +28,16 @@ void create_ent(char fname[], int len)
    FILE *entfile;
    entfile = fopen(entname, "w");
 
-   
+   /* assuming a list of ent is created, maybe done by by storing ent names
+   but I still don't know how that's gonna turn out */
+
+   int pairln = 0;
+   entpair pairs[];
+   for (int i = 0; i < pairln; i++)
+   {
+     printf("%s %07d", pairs[i].name, pairs[i].value, extfile);
+   }
+   fclose(entfile);
 }
 
 void create_ext(char fname[], int len)
@@ -41,6 +50,15 @@ void create_ext(char fname[], int len)
 
    FILE *extfile;
    extfile = fopen(extname, "w");
+
+   /* assuming a list of ext - ic values is somehow recived: let them be this:*/
+   int pairln = 0;
+   extpair pairs[];
+   for (int i = 0; i < pairln; i++)
+   {
+     printf("%s %07d", pairs[i].name, pairs[i].value, extfile);
+   }
+   fclose(extfile);
 }
 
 void create_ob(char fname[], int len)
