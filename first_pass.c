@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "assembler.h"
@@ -17,10 +18,10 @@ int first_pass(FILE *file)
   int rtn = TRUE;
   int line_num = 0;
 
-  while ((line = get_line(line, LINE_LEN, file)) != EOF)
+  while (get_line(line, LINE_LEN, file) != EOF)
   {
     int words_in_line = count_line_words(line, LINE_LEN);
-    char *words[];
+    char *words[words_in_line];
     int l, value1, value2;
     unsigned char are, funct, dest_reg, dest_type, src_reg, src_type, opcode, are2, are3;
     unsigned char msb, mb, lsb;
@@ -31,6 +32,10 @@ int first_pass(FILE *file)
     int first_word_len = strlen(words[0]);
     if (parse_symbol(words[0]))
       symbol = TRUE;
+
+    char label_name[first_word_len];
+    strncpy(label_name, words[0], first_word_len - 1);
+
     if (symbol && lookup(label_name) != NULL)
       error_clean(words, words_in_line, line_num, "Label already exists", &rtn);
 
@@ -39,11 +44,7 @@ int first_pass(FILE *file)
       int i, comma = FALSE; /* comma is to avoid double comma or no comma */
 
       if (symbol)
-      {
-        char label_name[first_word_len];
-        strncpy(label_name, words[0], first_word_len - 1);
         install(label_name, dc, DATA, FALSE, 0);
-      }
 
       for (i = 1 + symbol; i < words_in_line; i++)
       {
@@ -157,11 +158,7 @@ int first_pass(FILE *file)
       int i, k;
 
       if (symbol)
-      {
-        char label_name[first_word_len];
-        strncpy(label_name, words[0], first_word_len - 1);
         install(label_name, dc, DATA, FALSE, 0);
-      }
 
       if (*words[1 + symbol] != '"')
       {
@@ -207,11 +204,7 @@ int first_pass(FILE *file)
     }
 
     if (symbol)
-    {
-      char label_name[first_word_len];
-      strncpy(label_name, words[0], first_word_len - 1);
       install(label_name, ic, CODE, FALSE, 0);
-    }
 
     if (inarray(words[symbol], two_oprands, two_oprands_len))
     {
@@ -330,7 +323,7 @@ int first_pass(FILE *file)
     {
       char arg[32];
       if (words_in_line == 2 + symbol)
-        strcpy(arg1, words[1 + symbol]);
+        strcpy(arg, words[1 + symbol]);
       else
       {
         error_clean(words, words_in_line, line_num, "Oprand count not met", &rtn);
@@ -387,7 +380,7 @@ int first_pass(FILE *file)
 
       l = 1;
       are = 4;
-      est_reg = 0;
+      dest_reg = 0;
       dest_type = 0;
       src_reg = 0;
       src_type = 0;

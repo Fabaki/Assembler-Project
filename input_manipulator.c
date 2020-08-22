@@ -37,7 +37,7 @@ void openfile(FILE *file, char *fname)
 int get_line(char *line, int max, FILE *file)
 {
   if (fgets(line, max, file) == NULL)
-    return 0;
+    return EOF;
   else
     return strlen(line);
 }
