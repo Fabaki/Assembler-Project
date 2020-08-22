@@ -43,9 +43,9 @@ struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, i
 
 void change_word(struct int24 *p, unsigned char msb, unsigned char mb, unsigned char lsb, int cd)
 {
-  np->data = msb;
-  np->data = (np->data << 8) | mb;
-  np->data = (np->data << 8) | lsb;
+  p->data = msb;
+  p->data = (p->data << 8) | mb;
+  p->data = (p->data << 8) | lsb;
 }
 
 struct int24 *find_word_at(unsigned int ic, int cd)

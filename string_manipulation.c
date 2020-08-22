@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "string_manipulator.h"
+#include "string_manipulation.h"
 
 enum bool { FALSE, TRUE };
 
@@ -49,7 +49,8 @@ int strsplit(char word[], int len, char splitter, char word1[], char word2[])
 
 int *stoi(char s[])
 {
-  int i, result, sign;
+  int i, sign;
+  int *result = (int *) malloc(sizeof(int));
 
   sign = (s[i] == '-') ? -1 : 1;
   if (s[i] == '+' || s[i] == '-')
@@ -58,9 +59,9 @@ int *stoi(char s[])
   {
     if (s[i] < 48 || s[i] > 57)
       return NULL;
-    result = 10 * result + (s[i] - '0');
+    *result = 10 * *result + (s[i] - '0');
   }
-  result *= sign;
+  *result *= sign;
 
-  return &result;
+  return result;
 }

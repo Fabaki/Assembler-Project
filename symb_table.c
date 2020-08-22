@@ -16,7 +16,7 @@ struct nlist *lookup(char *name)
   struct nlist *np;
 
   for (np = symbol_table[hash(name)]; np != NULL; np = np->next)
-    if (strcmp(name, np->next) == 0)
+    if (strcmp(name, np->name) == 0)
       return np;
   return NULL;
 }

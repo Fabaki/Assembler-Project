@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "passes.h"
 #include "input_manipulator.h"
-#include "string_manipulator.h"
+#include "string_manipulation.h"
 #include "memory_structure.h"
 #include "opcodes.h"
 #include "symb_table.h"
@@ -429,7 +429,7 @@ int first_pass(FILE *file)
       }
       else if (parse_symbol(arg))
       {
-        dest_type = 1
+        dest_type = 1;
         are2 = 1;
       }
       else

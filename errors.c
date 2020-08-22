@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "errors.h"
 
 struct error *add_error(char *error, int line)

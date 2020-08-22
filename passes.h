@@ -3,16 +3,16 @@
 
 #define LINE_LEN 82
 
-char *two_oprands[] = {
+static char *two_oprands[] = {
   "mov",
   "cmp",
   "add",
   "sub",
   "lea"
 };
-const int two_oprands_len = 5;
+static const int two_oprands_len = 5;
 
-char *one_oprand[] = {
+static char *one_oprand[] = {
   "clr",
   "not",
   "inc",
@@ -23,15 +23,15 @@ char *one_oprand[] = {
   "red",
   "prn"
 };
-const int one_oprand_len = 9;
+static const int one_oprand_len = 9;
 
-char *no_oprand[] = {
+static char *no_oprand[] = {
   "rts",
   "stop"
 };
-const int no_oprand_len = 2;
+static const int no_oprand_len = 2;
 
-char *registers[] = {
+static char *registers[] = {
   "r0",
   "r1",
   "r2",
@@ -41,7 +41,7 @@ char *registers[] = {
   "r6",
   "r7"
 };
-const int registers_len = 8;
+static const int registers_len = 8;
 
 void free_memory(char *pointers[], int len);
 int parse_symbol(char *s);

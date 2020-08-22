@@ -8,6 +8,8 @@
 #include "errors.h"
 #include "passes.h"
 
+enum bool { FALSE, TRUE };
+
 void create_output(char *fname)
 {
   int len = strlen(fname);
@@ -43,13 +45,13 @@ void create_ent(char *fname, int len)
             entfile = fopen(entname, "w");
             file_exists = TRUE;
           }
-          fprintf(extfile, "%s %07d", np->name, np->value);
+          fprintf(entfile, "%s %07d", np->name, np->value);
         }
     }
   }
 
   if (file_exists)
-    fclose(extfile);
+    fclose(entfile);
 }
 
 void create_ext(char *fname, int len)
