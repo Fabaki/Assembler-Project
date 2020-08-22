@@ -8,7 +8,7 @@ enum bool { FALSE, TRUE };
 
 int openfile(FILE *file, char *fname)
 {
-  char filename[strlen(fname)+3];
+  char filename[strlen(fname)+4];
   char ex[] = ".as";
 
   strcat(filename, fname);

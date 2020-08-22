@@ -7,8 +7,8 @@
 #include "string_manipulator.h"
 #include "memory_structure.h"
 #include "opcodes.h"
-#include "output.h"
 #include "symb_table.h"
+#include "errors.h"
 
 int ic = 100, dc = 0;
 enum bool { FALSE, TRUE };
@@ -497,7 +497,7 @@ int first_pass(FILE *file)
   }
 
   icf = ic;
-  dcf = dc;
+  idf = dc;
 
   int i;
   for (i = 0; i < HASHSIZE; i++)
@@ -536,7 +536,7 @@ void free_memory(char *pointers[], int len)
 
 void error_clean(char *words[], int len, int line, char *error, int *rtn)
 {
-  add_error(line, error);
+  add_error(error, line);
   free_memory(words, len);
   *rtn = FALSE;
 }

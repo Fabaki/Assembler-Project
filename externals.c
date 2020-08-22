@@ -4,6 +4,8 @@
 
 struct extern_symbols *add_external(char *name, int value)
 {
+  if (find_extern(name) != NULL)
+    return NULL;
   struct extern_symbols *np;
   unsigned result;
 
@@ -27,5 +29,13 @@ struct extern_symbols *add_external(char *name, int value)
   np->name = copyname;
   np->value = value;
 
+  return np;
+}
+
+struct extern_symbols *find_extern(char *name)
+{
+  struct extern_symbols *np = first_extern;
+  for (; np != NULL && strcmp(np->name, name) != 0; np = np->next)
+    ;
   return np;
 }
