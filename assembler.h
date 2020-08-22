@@ -69,6 +69,8 @@ struct int24
 };
 
 struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, int cd);
+void change_word(struct int24 *p, unsigned char msb, unsigned char mb, unsigned char lsb, int cd);
+struct int24 *find_word_at(unsigned int ic, int cd);
 
 void openfile(FILE *file, char *fname);
 int get_line(char *line, int max, FILE *file);
@@ -82,17 +84,14 @@ int *stoi(char s[]);
 
 int add_error(int line, char *e);
 
-#define LINE_LEN 82
-
-int first_pass(FILE *file);
-int icf, dcf;
-
-struct extpair
+struct extern_symbols
 {
-  int val;
+  struct extern_symbols *next;
   char *name;
+  int value;
 };
-typedef struct extpair extpair;
+
+struct extern_symbols *add_external(char *name, int value);
 
 struct entpair /* entpair is probably temp, I still don't know how looping
 through the symb table would exactly turn out, and if this is useful or not */
@@ -102,7 +101,7 @@ through the symb table would exactly turn out, and if this is useful or not */
 };
 typedef struct entpair entpair;
 
-int second_pass(FILE *file);
+
 
 void create_output(char fname[], int anyEntries, int anyExterns);
 
@@ -115,6 +114,5 @@ void create_ob(char fname[], int len);
 void checkfile(char f[]);
 
 unsigned char *get_opcode_funct(char *cmd);
-long long decimal_to_binary(int n);
 
 #endif

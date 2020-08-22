@@ -45,6 +45,13 @@ struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, i
   return np;
 }
 
+void change_word(struct int24 *p, unsigned char msb, unsigned char mb, unsigned char lsb, int cd)
+{
+  np->data = msb;
+  np->data = (np->data << 8) | mb;
+  np->data = (np->data << 8) | lsb;
+}
+
 struct int24 *find_word_at(unsigned int ic, int cd)
 {
   struct int24 *p = (cd == 0 ? first_code : first_data);

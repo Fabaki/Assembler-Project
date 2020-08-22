@@ -3,12 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "assembler.h"
+#include "passes.h"
 
 int ic = 100, dc = 0;
-
-void free_memory(char *pointers[], int len);
-int parse_symbol(char *s);
-void error_clean(char *words[], int len, int line, char *error, int *rtn);
 
 int first_pass(FILE *file)
 {
@@ -263,28 +260,73 @@ int first_pass(FILE *file)
 
       if (inarray(arg1, registers, registers_len))
       {
+        if (strcmp(words[symbol], "lea"))
+        {
+          error_clean(words, words_in_line, line_num, "\"lea\" command's source oprand can only be using direct addressing", &rtn);
+          continue;
+        }
         src_reg = (unsigned char) (arg1[1] - '0'); /* if the arg1 is in the registers, its format is for sure rX */
         src_type = 3;
         --l;
       }
       else if (arg1[0] == '#')
       {
+        if (strcmp(words[symbol], "lea"))
+        {
+          error_clean(words, words_in_line, line_num, "\"lea\" command's source oprand can only be using direct addressing", &rtn);
+          continue;
+        }
         src_type = 0;
         value1 = atoi(&(arg1[1]));
         are2 = 4;
       }
+      else if (arg1[0] == '&')
+      {
+        error_clean(words, words_in_line, line_num, "Can use \"&\" only on \"jmp\",\"bne\",\"jsr\"", &rtn); /* those commands aren't 2 oprands */
+        continue;
+      }
+      else if (parse_symbol(arg1))
+      {
+        src_type = 1;
+        are2 = 0; /* we don't know if it is R or E */
+      }
+      else
+      {
+        error_clean(words, words_in_line, line_num, "Illegal oprand", &rtn);
+        continue;
+      }
 
       if (inarray(arg2, registers, registers_len))
       {
-        dest_reg = (unsigned char) (arg2[1] - '0'); /* if the arg1 is in the registers, its format is for sure rX */
+        dest_reg = (unsigned char) (arg2[1] - '0');
         dest_type = 3;
         --l;
       }
       else if (arg2[0] == '#')
       {
-        src_type = 0;
+        if (strcmp(words[symbol], "cmp") != 0)
+        {
+          error_clean(words, words_in_line, line_num, "Immediate addressing as destination oprand is legal only for \"cmp\",\"prn\"", &rtn);
+          continue;
+        }
+        dest_type = 0;
         value2 = atoi(&(arg2[1]));
         are3 = 4;
+      }
+      else if (arg2[0] == '&')
+      {
+        error_clean(words, words_in_line, line_num, "Relative addressing is available only on \"jmp\",\"bne\",\"jsr\"", &rtn);
+        continue;
+      }
+      else if (parse_symbol(arg2))
+      {
+        dest_type = 1;
+        are2 = 0;
+      }
+      else
+      {
+        error_clean(words, words_in_line, line_num, "Illegal oprand", &rtn);
+        continue;
       }
 
       unsigned char *opcode_funct = get_opcode_funct(words[symbol]);
@@ -296,17 +338,20 @@ int first_pass(FILE *file)
       msb = (opcode << 2) | src_type;
 
       add_word(msb, mb, lsb, 0);
-      if (are2)
+      if (src_type == 0)
       {
         lsb = (value1 << 3) | are2;
         mb = (value1 >> 5);
         msb = (value1 >> 13);
         add_word(msb, mb, lsb, 0);
       }
-      else /* Add an empty word (which can't exist in the code part since one of ARE is always on) for second pass */
-        add_word(0, 0, 0, 0);
+      else
+      {
+        lsb = 0 | are2; /* add a word with the correct are */
+        add_word(0, 0, lsb, 0);
+      }
 
-      if (are3)
+      if (dest_type == 0)
       {
         lsb = (value2 << 3) | are3;
         mb = (value2 >> 5);
@@ -314,7 +359,10 @@ int first_pass(FILE *file)
         add_word(msb, mb, lsb, 0);
       }
       else
-        add_word(0, 0, 0, 0);
+      {
+        lsb = 0 | are3; /* add a word with the correct are */
+        add_word(0, 0, lsb, 0);
+      }
 
       ic += l;
     }
@@ -337,15 +385,51 @@ int first_pass(FILE *file)
 
       if (inarray(arg, registers, registers_len))
       {
+        if (strcmp(words[symbol], "jmp") == 0 || strcmp(words[symbol], "bne") == 0 || strcmp(words[symbol], "jsr") == 0)
+        {
+          error_clean(words, words_in_line, line_num, "Register addressing is not available on \"jmp\",\"bne\",\"jsr\"", &rtn);
+          continue;
+        }
         dest_reg = (unsigned char) (arg[1] - '0'); /* if the arg1 is in the registers, its format is for sure rX */
         dest_type = 3;
         --l;
       }
       else if (arg[0] == '#')
       {
-        src_type = 0;
+        if (strcmp(words[symbol], "prn") != 0)
+        {
+          error_clean(words, words_in_line, line_num, "Immediate addressing as destination oprand is legal only for \"cmp\",\"prn\"", &rtn);
+          continue;
+        }
+        dest_type = 0;
         value2 = atoi(&(arg[1]));
         are2 = 4;
+      }
+      else if (arg[0] == '&')
+      {
+        if (strcmp(words[symbol], "jmp") != 0 && strcmp(words[symbol], "bne") != 0 && strcmp(words[symbol], "jsr") != 0)
+        {
+          error_clean(words, words_in_line, line_num, "Relative addressing is available only on \"jmp\",\"bne\",\"jsr\"", &rtn);
+          continue;
+        }
+        if (parse_symbol(arg + 1) == 0)
+        {
+          error_clean(words, words_in_line, line_num, "Illegal label", &rtn);
+          continue;
+        }
+
+        dest_type = 2;
+        are2 = 4;
+      }
+      else if (parse_symbol(arg))
+      {
+        dest_type = 1
+        are2 = 1;
+      }
+      else
+      {
+        error_clean(words, words_in_line, line_num, "Illegal oprand", &rtn);
+        continue;
       }
 
       unsigned char *opcode_funct = get_opcode_funct(words[symbol]);
@@ -357,7 +441,7 @@ int first_pass(FILE *file)
       msb = (opcode << 2) | src_type;
 
       add_word(msb, mb, lsb, 0);
-      if (are2)
+      if (dest_type == 0)
       {
         lsb = (value1 << 3) | are2;
         mb = (value1 >> 5);
@@ -365,7 +449,10 @@ int first_pass(FILE *file)
         add_word(msb, mb, lsb, 0);
       }
       else
-        add_word(0, 0, 0, 0);
+      {
+        lsb = 0 | are2;
+        add_word(0, 0, lsb, 0);
+      }
 
       ic += l;
     }
