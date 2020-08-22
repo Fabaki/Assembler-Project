@@ -7,7 +7,8 @@ int main(int argc, char *argv[])
   FILE *file;
   for (i = 1; i < argc; i++)
   {
-    openfile(file, argv[i]);
+    if (!openfile(file, argv[i]))
+      continue;
     if (first_pass(file))
       second_pass(file); /* add */
 

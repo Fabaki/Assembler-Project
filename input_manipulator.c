@@ -24,14 +24,17 @@ char code[] = \
 "      .data -100\n"
 "K:    .data 31\n";
 
-void openfile(FILE *file, char *fname)
+int openfile(FILE *file, char *fname)
 {
   char filename[strlen(fname)+3];
   char ex[] = ".as";
 
   strcat(filename, fname);
   strcat(filename, ex);
-  file = fopen(filename, "r");
+  if (file = fopen(filename, "r"))
+    return TRUE;
+  else
+    return FALSE;
 }
 
 int get_line(char *line, int max, FILE *file)

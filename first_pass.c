@@ -3,7 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "assembler.h"
-#define LINE_LEN 82
 
 int ic = 100, dc = 0;
 

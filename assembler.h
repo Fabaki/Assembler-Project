@@ -82,8 +82,35 @@ int *stoi(char s[]);
 
 int add_error(int line, char *e);
 
+#define LINE_LEN 82
+
 int first_pass(FILE *file);
 int icf, dcf;
+
+struct extpair
+{
+  int val;
+  char *name;
+};
+typedef struct extpair extpair;
+
+struct entpair /* entpair is probably temp, I still don't know how looping
+through the symb table would exactly turn out, and if this is useful or not */
+{
+  int val;
+  char *name;
+};
+typedef struct entpair entpair;
+
+int second_pass(FILE *file);
+
+void create_output(char fname[], int anyEntries, int anyExterns);
+
+void create_ent(char fname[], int len);
+
+void create_ext(char fname[], int len);
+
+void create_ob(char fname[], int len);
 
 void checkfile(char f[]);
 
