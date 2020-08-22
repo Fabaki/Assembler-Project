@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "output.h"
+#include "symb_table.h"
+#include "externals.h"
 
 int add_error(int line, char *e)
 {
@@ -30,16 +32,19 @@ void create_ent(char fname[], int len)
    FILE *entfile;
    entfile = fopen(entname, "w");
 
-   /* assuming a list of ent is created, maybe done by by storing ent names
-   but I still don't know how that's gonna turn out */
-
-   int pairln = 0;
-   entpair pairs[];
-   for (int i = 0; i < pairln; i++)
+   int i;
+   for (i = 0; i < HASHSIZE; i++) /* go through all 4 "cells" in symb table */
    {
-     fprintf(extfile, "%s %07d", pairs[i].name, pairs[i].value);
+     np = symbol_table[i];
+     for (; np != NULL; np = np->next) /* for each cell check each symbol */
+     {
+       if (np.has_type)
+        if (np.type == 0)
+          fprintf(extfile, "%s %07d", pairs[i].name, pairs[i].value);
+     }
    }
-   fclose(entfile);
+
+   fclose(extfile);
 }
 
 void create_ext(char fname[], int len)
@@ -53,13 +58,9 @@ void create_ext(char fname[], int len)
    FILE *extfile;
    extfile = fopen(extname, "w");
 
-   /* assuming a list of ext - ic values is somehow recived: let them be this:*/
-   int pairln = 0;
-   extpair pairs[];
-   for (int i = 0; i < pairln; i++)
-   {
-     fprintf(extfile, "%s %07d", pairs[i].name, pairs[i].value);
-   }
+   for(el = first_extern; el != null; el = el->next)
+     fprintf(extfile, "%s %07d", el.name, el.value);
+
    fclose(extfile);
 }
 
