@@ -42,7 +42,7 @@ int second_pass(FILE *file)
         }
       }
       /* reaching this line means doing completion of kidud binary part
-
+      (part 6 of second pass)
       lolllll imagine knowing how to do this lololololol
       what even is binary? some kind of a kosher pork suplement?
       */
