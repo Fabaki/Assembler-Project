@@ -35,7 +35,7 @@ void create_ent(char fname[], int len)
    entpair pairs[];
    for (int i = 0; i < pairln; i++)
    {
-     printf("%s %07d", pairs[i].name, pairs[i].value, extfile);
+     fprintf(extfile, "%s %07d", pairs[i].name, pairs[i].value);
    }
    fclose(entfile);
 }
@@ -56,7 +56,7 @@ void create_ext(char fname[], int len)
    extpair pairs[];
    for (int i = 0; i < pairln; i++)
    {
-     printf("%s %07d", pairs[i].name, pairs[i].value, extfile);
+     fprintf(extfile, "%s %07d", pairs[i].name, pairs[i].value);
    }
    fclose(extfile);
 }
