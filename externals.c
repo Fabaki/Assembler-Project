@@ -4,10 +4,11 @@
 
 struct extern_symbols *add_external(char *name, int value)
 {
+  struct extern_symbols *np;
+  char *copyname;
+
   if (find_extern(name) != NULL)
     return NULL;
-  struct extern_symbols *np;
-  unsigned result;
 
   np = (struct extern_symbols *) malloc(sizeof(struct extern_symbols));
   if (np == NULL)
@@ -24,7 +25,7 @@ struct extern_symbols *add_external(char *name, int value)
   }
 
   np->next = NULL;
-  char *copyname = (char *) malloc(sizeof(char) * (strlen(name) + 1));
+  copyname = (char *) malloc(sizeof(char) * (strlen(name) + 1));
   strcpy(copyname, name);
   np->name = copyname;
   np->value = value;

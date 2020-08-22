@@ -5,8 +5,10 @@
 
 struct error *add_error(char *error, int line)
 {
-  ++error_count;
   struct error *np;
+  char *error_copy;
+
+  ++error_count;
 
   np = (struct error *) malloc(sizeof(struct error));
   if (np == NULL)
@@ -25,7 +27,7 @@ struct error *add_error(char *error, int line)
 
   np->next = NULL;
   np->line = line;
-  char *error_copy = (char *) malloc(sizeof(char) * (strlen(error) + 1));
+  error_copy = (char *) malloc(sizeof(char) * (strlen(error) + 1));
   np->error = error_copy;
 
   return np;

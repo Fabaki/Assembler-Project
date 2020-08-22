@@ -24,14 +24,14 @@ int first_pass(FILE *file)
   {
     int words_in_line = count_line_words(line, LINE_LEN);
     char *words[words_in_line];
-    int l, value1, value2;
+    int l, value1, value2, first_word_len;
     unsigned char are, funct, dest_reg, dest_type, src_reg, src_type, opcode, are2, are3;
     unsigned char msb, mb, lsb;
 
     ++line_num;
     get_line_words(line, LINE_LEN, words);
 
-    int first_word_len = strlen(words[0]);
+    first_word_len = strlen(words[0]);
     if (parse_symbol(words[0]))
       symbol = TRUE;
 

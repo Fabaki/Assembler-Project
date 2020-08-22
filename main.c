@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
   int i;
-  FILE *file;
+  FILE *file = NULL;
   for (i = 1; i < argc; i++)
   {
     if (!openfile(file, argv[i]))
