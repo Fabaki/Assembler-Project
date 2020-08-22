@@ -234,7 +234,7 @@ int first_pass(FILE *file)
             strncpy(arg1, words[1 + symbol], strlen(words[1 + symbol]) - 1);
             strcpy(arg2, words[2 + symbol]);
           }
-          else if (*(words[2 + symbol]) == ',')
+          else if (*(words[2 + symbol]) == ',') /* is the first char of second arg ',' */
           {
             strcpy(arg1, words[1 + symbol]);
             strcpy(arg1, words[2 + symbol] + 1);
@@ -299,9 +299,9 @@ int first_pass(FILE *file)
       add_word(msb, mb, lsb, 0);
       if (are2)
       {
-        lsb = (value1 << 2) | are2;
-        mb = (value1 >> 8);
-        msb = (value1 >> 16);
+        lsb = (value1 << 3) | are2;
+        mb = (value1 >> 5);
+        msb = (value1 >> 13);
         add_word(msb, mb, lsb, 0);
       }
       else /* Add an empty word (which can't exist in the code part since one of ARE is always on) for second pass */
@@ -309,9 +309,9 @@ int first_pass(FILE *file)
 
       if (are3)
       {
-        lsb = (value2 << 2) | are3;
-        mb = (value2 >> 8);
-        msb = (value2 >> 16);
+        lsb = (value2 << 3) | are3;
+        mb = (value2 >> 5);
+        msb = (value2 >> 13);
         add_word(msb, mb, lsb, 0);
       }
       else
@@ -360,9 +360,9 @@ int first_pass(FILE *file)
       add_word(msb, mb, lsb, 0);
       if (are2)
       {
-        lsb = (value1 << 2) | are2;
-        mb = (value1 >> 8);
-        msb = (value1 >> 16);
+        lsb = (value1 << 3) | are2;
+        mb = (value1 >> 5);
+        msb = (value1 >> 13);
         add_word(msb, mb, lsb, 0);
       }
       else
