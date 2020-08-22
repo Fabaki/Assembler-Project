@@ -18,7 +18,7 @@ const int two_oprands_len = 5;
 
 char *one_oprand[] = {
   "clr",
-  "not",struct nlist *np;
+  "not",
   "inc",
   "dec",
   "jmp",
