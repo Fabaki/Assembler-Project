@@ -38,54 +38,13 @@ int second_pass(FILE *file)
               np->has_type = 1;
               np->type = 0; /* set it to entry */
             }
-            /*TODO: there should be an error trigger here */
+            /*TODO: there should be an error trigger here but idk how to phrase it */
         }
       }
       /* reaching this line means doing completion of kidud binary part
       (part 6 of second pass)
       lolllll imagine knowing how to do this lololololol
       what even is binary? some kind of a kosher pork suplement?
-      */
+      */      
   }
-}
-
-void create_output(char fname[], int anyEntries, int anyExterns)
-{
-  int len = strlen(fname);
-
-  if(anyEntries)
-    {
-      char entname[strlen(fname) + 4];
-      char ent[] = ".ent";
-
-      strcat(entname, fname);
-      strcat(entname, ent);
-
-     FILE *entfile;
-     entfile = fopen(entname, "w");
-
-
-    }
-
-  if (anyExterns)
-    {
-      char extname[strlen(fname) + 4];
-      char ext[] = ".ext";
-
-      strcat(extname, fname);
-      strcat(extname, ext);
-
-     FILE *extfile;
-     extfile = fopen(extname, "w");
-    }
-
-    char obname[strlen(fname) + 3];
-    char ob[] = ".ob";
-
-    strcat(obname, fname);
-    strcat(obname, ob);
-
-   FILE *obfile;
-   obfile = fopen(obname, "w");
-  /* create actual obj */
 }
