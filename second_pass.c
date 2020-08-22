@@ -25,7 +25,7 @@ int second_pass(FILE *file)
   while (get_line(line, LINE_LEN, file) != EOF)
   {
     int words_in_line = count_line_words(line, LINE_LEN);
-    char *words[words_in_line];
+    char **words = (char **)malloc(words_in_line * sizeof(char *));
     get_line_words(line, LINE_LEN, words);
     ++line_num;
 

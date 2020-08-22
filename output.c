@@ -21,7 +21,7 @@ void create_output(char *fname)
 
 void create_ent(char *fname, int len)
 {
-  char entname[strlen(fname) + 5];
+  char* entname = (char*)malloc((strlen(fname) + 5)*sizeof(char*));
   char ent[] = ".ent";
   int file_exists = FALSE;
 
@@ -56,7 +56,7 @@ void create_ent(char *fname, int len)
 
 void create_ext(char *fname, int len)
 {
-  char extname[strlen(fname) + 5];
+  char* extname = (char*)malloc((strlen(fname) + 5)*sizeof(char*));
   char ext[] = ".ext";
   struct extern_symbols *el;
   if (first_extern == NULL)
@@ -76,7 +76,7 @@ void create_ext(char *fname, int len)
 
 void create_ob(char *fname, int len)
 {
-  char obname[strlen(fname) + 4];
+  char* obname = (char*)malloc((strlen(fname) + 4)*sizeof(char*));
   char ob[] = ".ob";
   static struct int24 *p;
   int i;

@@ -8,12 +8,12 @@ enum bool { FALSE, TRUE };
 
 int openfile(FILE *file, char *fname)
 {
-  char filename[strlen(fname)+4];
+  char* filename = (char*)malloc((strlen(fname)+4) * sizeof(char*));
   char ex[] = ".as";
 
   strcat(filename, fname);
   strcat(filename, ex);
-  if (file = fopen(filename, "r"))
+  if ((file = fopen(filename, "r")))
     return TRUE;
   else
     return FALSE;
@@ -42,7 +42,7 @@ int count_line_words(char *line, int line_limit)
     while ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
       i++;
 
-    if ((line[i] == '\0' || line[i] == EOF || line[i] == '\n') &&  (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]))
+    if ( ( (line[i] == '\0' || line[i] == EOF || line[i] == '\n') ) && ( (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]) ) )
       ++words;
 
     if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)

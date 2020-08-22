@@ -23,7 +23,7 @@ int first_pass(FILE *file)
   while (get_line(line, LINE_LEN, file) != EOF)
   {
     int words_in_line = count_line_words(line, LINE_LEN);
-    char *words[words_in_line];
+    char **words = (char **)malloc(words_in_line * sizeof(char *));
     int l, value1, value2, first_word_len;
     unsigned char are, funct, dest_reg, dest_type, src_reg, src_type, opcode, are2, are3;
     unsigned char msb, mb, lsb;
@@ -35,7 +35,7 @@ int first_pass(FILE *file)
     if (parse_symbol(words[0]))
       symbol = TRUE;
 
-    char label_name[first_word_len];
+    char *label_name = (char*)malloc(first_word_len * sizeof(char *));
     strncpy(label_name, words[0], first_word_len - 1);
 
     if (symbol && lookup(label_name) != NULL)
@@ -44,6 +44,7 @@ int first_pass(FILE *file)
     if (strcmp(words[symbol], ".data") == 0)
     {
       int i, comma = FALSE; /* comma is to avoid double comma or no comma */
+      int value;
 
       if (symbol)
         install(label_name, dc, DATA, FALSE, 0);
@@ -60,7 +61,6 @@ int first_pass(FILE *file)
           continue;
         }
 
-        int value;
         if (instring(',', words[i], strlen(words[i])))
         {
           if (*(words[i] + strlen(words[i] - 1)) == ',') /* is the last char ',' */
