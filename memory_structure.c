@@ -1,11 +1,7 @@
 #include <stdlib.h>
-#include <string.h>
-#include "assembler.h"
+#include "memory_structure.h"
 
-static struct int24 *first_code;
-static struct int24 *first_data;
-
-struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, int cd) /* all bytes, and code (0) or data (everthing else) */
+struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, int cd)
 {
   struct int24 *np;
   unsigned result;

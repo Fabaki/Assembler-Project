@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "assembler.h"
+#include "string_manipulator.h"
+
+enum bool { FALSE, TRUE };
 
 int inarray(char *word, char *array[], int array_length)
 {

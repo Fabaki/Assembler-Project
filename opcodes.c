@@ -1,4 +1,5 @@
-#include "assembler.h"
+#include <string.h>
+#include "opcodes.h"
 
 unsigned char *get_opcode_funct(char *cmd)
 {

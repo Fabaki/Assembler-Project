@@ -1,9 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include "assembler.h"
 #include "passes.h"
+#include "input_manipulator.h"
+#include "string_manipulator.h"
+#include "memory_structure.h"
+#include "output.h"
+#include "symb_table.h"
+
+enum bool { FALSE, TRUE };
 
 int second_pass(FILE *file)
 {

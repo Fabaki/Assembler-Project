@@ -2,10 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "assembler.h"
 #include "passes.h"
+#include "input_manipulator.h"
+#include "string_manipulator.h"
+#include "memory_structure.h"
+#include "opcodes.h"
+#include "output.h"
+#include "symb_table.h"
 
 int ic = 100, dc = 0;
+enum bool { FALSE, TRUE };
 
 int first_pass(FILE *file)
 {

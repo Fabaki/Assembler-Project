@@ -1,5 +1,7 @@
 #include <stdlib.h>
-#include "assembler.h"
+#include <stdio.h>
+#include <string.h>
+#include "output.h"
 
 int add_error(int line, char *e)
 {

@@ -1,10 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "assembler.h"
-
-#define HASHSIZE 4
-
-static struct nlist *symbol_table[HASHSIZE];
+#include "symb_table.h"
 
 unsigned hash(char *s)
 {

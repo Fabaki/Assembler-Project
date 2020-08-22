@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "assembler.h"
-
-static struct extern_symbols *first_extern;
+#include "externals.h"
 
 struct extern_symbols *add_external(char *name, int value)
 {

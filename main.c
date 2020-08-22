@@ -1,5 +1,6 @@
-#include <stdlib.h>
-#include "assembler.h"
+#include <stdio.h>
+#include "input_manipulator.h"
+#include "passes.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,8 +11,7 @@ int main(int argc, char *argv[])
     if (!openfile(file, argv[i]))
       continue;
     if (first_pass(file))
-      second_pass(file); /* add */
-
+      second_pass(file);
   }
   return 0;
 }
