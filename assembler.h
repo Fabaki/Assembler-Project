@@ -18,7 +18,7 @@ const int two_oprands_len = 5;
 
 char *one_oprand[] = {
   "clr",
-  "not",
+  "not",struct nlist *np;
   "inc",
   "dec",
   "jmp",
@@ -72,5 +72,11 @@ void checkfile(char f[]);
 
 int second_pass(FILE *file);
 
-void create_output(int anyEntries, int anyExterns);
+void create_output(char fname[], int anyEntries, int anyExterns);
+
+void create_ent(char fname[], int len);
+
+void create_ext(char fname[], int len);
+
+void create_ob(char fname[], int len);
 #endif

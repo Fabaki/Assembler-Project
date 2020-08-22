@@ -25,16 +25,27 @@ int second_pass(FILE *file)
       if (strcmp(words[startSymbol], ".extern") == 0)
       {
        anyExterns = TRUE;
+       continue;
       }
       if (strcmp(words[startSymbol], ".entry") == 0)
-      {
+        {
         anyEntries = TRUE;
-        /* do entry thing - unless I am DAPAR 30 I'm pretty certain
-        that it asks for you to edit an existing value in the symb table,
-        and from what Iv'e seen it can't do that yet */
-        continue
+
+            struct nlist *np;
+            np = lookup(words[startSymbol+1]);
+            if (np != NULL)
+            {
+              np->has_type = 1;
+              np->type = 0; /* set it to entry */
+            }
+            /*TODO: there should be an error trigger here */
+        }
       }
-      /* reaching this line means doing completion of kidud binary part */
+      /* reaching this line means doing completion of kidud binary part
+
+      lolllll imagine knowing how to do this lololololol
+      what even is binary? some kind of a kosher pork suplement?
+      */
   }
 }
 
