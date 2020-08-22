@@ -2,7 +2,7 @@
 #define ASSEMBLER_H
 
 enum symbl_loc { DATA, CODE };
-enum symbl_type { ENTRY, EXTERNAL };
+enum symbl_type { ENTRY, EXTERN };
 enum bool { FALSE, TRUE };
 
 char *two_oprands[] = {
@@ -55,6 +55,10 @@ struct nlist
   unsigned int type : 1; /* Entry (0) or External (1) */
 };
 
+#define HASHSIZE 4
+
+static struct nlist *symbol_table[HASHSIZE];
+
 struct nlist *lookup(char *name);
 struct nlist *install(char *name, int value, int loc, int has_type, int type);
 
@@ -79,6 +83,7 @@ int *stoi(char s[]);
 int add_error(int line, char *e);
 
 int first_pass(FILE *file);
+int icf, dcf;
 
 void checkfile(char f[]);
 

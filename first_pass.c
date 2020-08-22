@@ -7,6 +7,8 @@
 int ic = 100, dc = 0;
 
 void free_memory(char *pointers[], int len);
+int parse_symbol(char *s);
+void error_clean(char *words[], int len, int line, char *error, int *rtn);
 
 int first_pass(FILE *file)
 {
@@ -30,22 +32,26 @@ int first_pass(FILE *file)
     if (parse_symbol(words[0]))
       symbol = TRUE;
     if (symbol && lookup(label_name) != NULL)
-    {
-      add_error(line_num, "Label already exists");
-      free_memory(words, words_in_line);
-    }
+      error_clean(words, words_in_line, line_num, "Label already exists", &rtn);
 
     if (strcmp(words[symbol], ".data") == 0)
     {
       int i, comma = FALSE; /* comma is to avoid double comma or no comma */
+
+      if (symbol)
+      {
+        char label_name[first_word_len];
+        strncpy(label_name, words[0], first_word_len - 1);
+        install(label_name, dc, DATA, FALSE, 0);
+      }
+
       for (i = 1 + symbol; i < words_in_line; i++)
       {
         if (strcmp(words[i], ",") == 0)
         {
           if (comma != FALSE)
           {
-            add_error(line_num, "Too many commas");
-            free_memory(words, words_in_line);
+            error_clean(words, words_in_line, line_num, "Too many commans", &rtn);
             break;
           }
           continue;
@@ -58,8 +64,7 @@ int first_pass(FILE *file)
           {
             if (comma == FALSE)
             {
-              add_error(line_num, "Not enough commas");
-              free_memory(words, words_in_line);
+              error_clean(words, words_in_line, line_num, "Not enough commas", &rtn);
               break;
             }
             *(words[i] + strlen(words[i]) - 1) = '\0';
@@ -67,8 +72,7 @@ int first_pass(FILE *file)
               value = *(stoi(words[i]));
             else
             {
-              add_error(line_num, "Non numeric character found");
-              free_memory(words, words_in_line);
+              error_clean(words, words_in_line, line_num, "Non numeric character found", &rtn);
               break;
             }
             comma = TRUE;
@@ -77,16 +81,14 @@ int first_pass(FILE *file)
           {
             if (comma != FALSE)
             {
-              add_error(line_num, "Too many commas");
-              free_memory(words, words_in_line);
+              error_clean(words, words_in_line, line_num, "Too many commas", &rtn);
               break;
             }
             if (stoi(words[i] + 1) != NULL)
               value = *(stoi(words[i] + 1));
             else
             {
-              add_error(line_num, "Non numeric character found");
-              free_memory(words, words_in_line);
+              error_clean(words, words_in_line, line_num, "Non numeric character found", &rtn);
               break;
             }
             comma = FALSE;
@@ -95,8 +97,7 @@ int first_pass(FILE *file)
           {
             if (comma != FALSE)
             {
-              add_error(line_num, "Too many commas");
-              free_memory(words, words_in_line);
+              error_clean(words, words_in_line, line_num, "Too many commas", &rtn);
               break;
             }
 
@@ -105,8 +106,7 @@ int first_pass(FILE *file)
               value = *(stoi(words[i] + 1));
             else
             {
-              add_error(line_num, "Non numeric character found");
-              free_memory(words, words_in_line);
+              error_clean(words, words_in_line, line_num, "Non numeric character found", &rtn);
               break;
             }
             comma = TRUE;
@@ -131,8 +131,7 @@ int first_pass(FILE *file)
                 }
                 else
                 {
-                  add_error(line_num, "Non numeric character found");
-                  free_memory(words, words_in_line);
+                  error_clean(words, words_in_line, line_num, "Non numeric character found", &rtn);
                   break;
                 }
               }
@@ -141,8 +140,7 @@ int first_pass(FILE *file)
         }
         else if (comma == FALSE)
         {
-          add_error(line_num, "Not enough commas");
-          free_memory(words, words_in_line);
+          error_clean(words, words_in_line, line_num, "Not enough commas", &rtn);
           break;
         }
 
@@ -156,17 +154,55 @@ int first_pass(FILE *file)
     }
     else if (strcmp(words[symbol], ".string") == 0)
     {
+      int i, k;
 
+      if (symbol)
+      {
+        char label_name[first_word_len];
+        strncpy(label_name, words[0], first_word_len - 1);
+        install(label_name, dc, DATA, FALSE, 0);
+      }
+
+      if (*words[1 + symbol] != '"')
+      {
+        error_clean(words, words_in_line, line_num, "String not starting with \"", &rtn);
+        continue;
+      }
+      if (*(words[words_in_line - 1] + strlen(words[words_in_line - 1] - 1)) != '"')
+      {
+        error_clean(words, words_in_line, line_num, "String not ending with \"", &rtn);
+        *(words[words_in_line - 1]) = '\0';
+        continue;
+      }
+
+      for (k = 1; k < strlen(words[1 + symbol]); k++)
+      {
+        add_word(0, 0, *(words[1 + symbol] + k), 1);
+        ++dc;
+      }
+      for (i = 2 + symbol; i < words_in_line; i++)
+      {
+        for (k = 0; k < strlen(words[i]); k++)
+        {
+          add_word(0, 0, *(words[i] + k), 1);
+          ++dc;
+        }
+      }
+      add_word(0, 0, 0, 1); /* add \0 */
+      ++dc;
       continue;
     }
     else if (strcmp(words[symbol], ".entry") == 0)
-    {
-
       continue;
-    }
     else if (strcmp(words[symbol], ".extern") == 0)
     {
+      if (words_in_line != 2 + symbol)
+      {
+        error_clean(words, words_in_line, line_num, "Too many oprands", &rtn);
+        continue;
+      }
 
+      install(words[symbol + 1], 0, CODE, TRUE, EXTERN); /* Was set to code so that it won't be incremented by ICF */
       continue;
     }
 
@@ -191,8 +227,7 @@ int first_pass(FILE *file)
         }
         else
         {
-          add_error(line_num, "Too many oprands");
-          free_memory(words, words_in_line);
+          error_clean(words, words_in_line, line_num, "Too many oprands", &rtn);
           continue;
         }
       }
@@ -213,22 +248,19 @@ int first_pass(FILE *file)
           }
           else
           {
-            add_error(line_num, "Oprand containing \",\"");
-            free_memory(words, words_in_line);
+            error_clean(words, words_in_line, line_num, "Oprand containing \",\"", &rtn);
             continue;
           }
         }
         else
         {
-          add_error(line_num, "No \",\" between oprands");
-          free_memory(words, words_in_line);
+          error_clean(words, words_in_line, line_num, "No \",\" between oprands", &rtn);
           continue;
         }
       }
       else
       {
-        add_error(line_num, "Oprand count not met");
-        free_memory(words, words_in_line);
+        error_clean(words, words_in_line, line_num, "Oprand count not met", &rtn);
         continue;
       }
 
@@ -301,8 +333,7 @@ int first_pass(FILE *file)
         strcpy(arg1, words[1 + symbol]);
       else
       {
-        add_error(line_num, "Oprand count not met");
-        free_memory(words, words_in_line);
+        error_clean(words, words_in_line, line_num, "Oprand count not met", &rtn);
         continue;
       }
 
@@ -350,8 +381,7 @@ int first_pass(FILE *file)
     {
       if (words_in_line != 1 + symbol)
       {
-        add_error(line_num, "Oprand count not met");
-        free_memory(words, words_in_line);
+        error_clean(words, words_in_line, line_num, "Oprand count not met", &rtn);
         continue;
       }
 
@@ -376,16 +406,28 @@ int first_pass(FILE *file)
     }
     else
     {
-      add_error(line_num, "Command isn't recognized");
-      free_memory(words, words_in_line);
+      error_clean(words, words_in_line, line_num, "Command isn't recognized", &rtn);
       continue;
+    }
+  }
+
+  icf = ic;
+  dcf = dc;
+
+  int i;
+  for (i = 0; i < HASHSIZE; i++)
+  {
+    struct nlist *p = symbol_table[i];
+    while (p->next != NULL)
+    {
+      if (p->loc == DATA)
+        p->value += icf;
+      p = p->next;
     }
   }
 
   return rtn;
 }
-
-int parse_symbol(char *s);
 
 int parse_symbol(char *s)
 {
@@ -405,4 +447,11 @@ void free_memory(char *pointers[], int len)
   int i;
   for (i = 0; i < len; i++)
     free(pointers[i]);
+}
+
+void error_clean(char *words[], int len, int line, char *error, int *rtn)
+{
+  add_error(line, error);
+  free_memory(words, len);
+  *rtn = FALSE;
 }
