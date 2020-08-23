@@ -20,8 +20,9 @@ void create_output(char *fname)
   create_ext(fname, len);
 }
 
-void create_ent(char *fname, int len)
+void create_ent(char *fname)
 {
+  /* generate the name that the .ent file would have */
   char *entname = (char*) calloc(strlen(fname) + 5, sizeof(char));
   char ent[] = ".ent";
   int file_exists = FALSE;
@@ -35,7 +36,6 @@ void create_ent(char *fname, int len)
 
   struct nlist **table = get_symbol_table();
 
-    printf("output.c ->   ************ Going through symbol table\n");
   for (i = 0; i < HASHSIZE; i++) /* go through all 4 "cells" in symb table */
   {
     struct nlist *np = *(table + i);
@@ -49,6 +49,7 @@ void create_ent(char *fname, int len)
                   file_exists = TRUE;
               }
               fprintf(entfile, "%s %07d\n", np->name, np->value);
+              /* writes the name and the seven zeroes padded value */
           }
       }
     }
@@ -58,7 +59,7 @@ void create_ent(char *fname, int len)
     fclose(entfile);
 }
 
-void create_ext(char *fname, int len)
+void create_ext(char *fname)
 {
   char *extname = (char*) calloc(strlen(fname) + 5, sizeof(char));
   char ext[] = ".ext";
@@ -75,16 +76,14 @@ void create_ext(char *fname, int len)
 
   extfile = fopen(extname, "w");
 
+  /* go thorugh linked list */
   for(;el != NULL; el = el->next)
-  {
-      printf("Print called in ext very cool\n");
     fprintf(extfile, "%s %07d\n", el->name, el->value);
-  }
 
   fclose(extfile);
 }
 
-void create_ob(char *fname, int len)
+void create_ob(char *fname)
 {
   char *obname = (char *) calloc(strlen(fname) + 4, sizeof(char));
   char ob[] = ".ob";
@@ -99,6 +98,7 @@ void create_ob(char *fname, int len)
 
   obfile = fopen(obname, "w");
 
+  /* adding icf and idf at the top */
   fprintf(obfile, "%d %d\n", icf - 100, idf);
 
   for (p = get_first(0), i = 100; p != NULL; p = p->next, i++)

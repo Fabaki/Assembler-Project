@@ -8,6 +8,7 @@ enum bool { FALSE, TRUE };
 
 FILE *openfile(FILE *file, char *fname)
 {
+    /* creating string with .as extension */
   char *filename = (char*) calloc(strlen(fname) + 4, sizeof(char));
   char ex[] = ".as";
 
@@ -34,6 +35,7 @@ int count_line_words(char *line, int line_limit)
 
   while (line[i] != EOF && line[i] != '\n' && line[i] != '\0' && line_limit > 0)
   {
+    /* ignore multiple whitespaces in a row */
     while (isspace(line[i]) && line_limit--)
       i++;
 

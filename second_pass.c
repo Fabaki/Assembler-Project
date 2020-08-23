@@ -20,6 +20,8 @@ int second_pass(FILE *file)
   unsigned char are2, are3;
   char line[LINE_LEN];
   int symbol; /* yes/no boolean to indicate if the line has a symbol */
+    /* symbol is used both as a way of knowing if the statement begins with a symbol, and as a way to increment to the
+     * first argument in the words var */
   int line_num = 0;
   unsigned char lsb, mb, msb;
 
@@ -33,15 +35,6 @@ int second_pass(FILE *file)
       continue;
     get_line_words(line, LINE_LEN, words);
     ++line_num;
-
-    /* debug */
-    int z;
-    printf("\nLine is: ");
-    for (z = 0; z < words_in_line; z++)
-        printf("%s ", words[z]);
-    printf("\n");
-
-    /* debug */
 
     if (parse_symbol(*(words))) /* if starts with has_symbol */
       symbol = TRUE;

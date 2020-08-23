@@ -34,14 +34,6 @@ struct extern_symbols *add_external(char *name, int value)
   return np;
 }
 
-struct extern_symbols *find_extern(char *name)
-{
-  struct extern_symbols *np = first_extern;
-  for (; np != NULL && strcmp(np->name, name) != 0; np = np->next)
-    ;
-  return np;
-}
-
 struct extern_symbols *get_first_ext()
 {
   return first_extern;

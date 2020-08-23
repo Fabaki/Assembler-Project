@@ -37,6 +37,8 @@ int first_pass(FILE *file)
     if (words_in_line == 0)
       continue;
 
+    /* symbol is used both as a way of knowing if the statement begins with a symbol, and as a way to increment to the
+     * first argument in the words var */
     symbol = FALSE;
     get_line_words(line, LINE_LEN, words);
 

@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
   int i;
   FILE *file = NULL;
 
+  /* go through each file name received as an argument and treat them individually */
   for (i = 1; i < argc; i++)
   {
     file = openfile(file, argv[i]);
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
       printf("Error: file doesn't exist\n");
       continue;
     }
-    if (first_pass(file)) { /*temporary fix*/
+    if (first_pass(file)) {
         fclose(file);
         file = openfile(file, argv[i]);
         second_pass(file);

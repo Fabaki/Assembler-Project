@@ -9,8 +9,14 @@ struct extern_symbols
 };
 
 static struct extern_symbols *first_extern;
+
+/**
+ * add a (name;value) pair to the list of external symbols used for the ext file
+ * @param name -> name of of the symbol
+ * @param value -> value of the symbol
+ * @return pointer to external added
+ */
 struct extern_symbols *add_external(char *name, int value);
-struct extern_symbols *find_extern(char *name);
 struct extern_symbols *get_first_ext();
 
 #endif
