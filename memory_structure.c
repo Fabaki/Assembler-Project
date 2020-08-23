@@ -32,25 +32,32 @@ struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, i
 
   np->next = NULL;
 
-  np->data = msb;
-  np->data = (np->data << 8) | mb;
-  np->data = (np->data << 8) | lsb;
+  np->data = lsb;
+  np->data += mb * 256;
+  np->data += msb * 65536;
 
   return np;
 }
 
 void change_word(struct int24 *p, unsigned char msb, unsigned char mb, unsigned char lsb, int cd)
 {
-  p->data = msb;
-  p->data = (p->data << 8) | mb;
-  p->data = (p->data << 8) | lsb;
+  struct int24 *temp = first_code;
+  while (temp != p)
+    temp = temp->next;
+  temp->data = lsb;
+  temp->data += mb * 256;
+  temp->data += msb * 65536;
 }
 
 struct int24 *find_word_at(unsigned int ic, int cd)
 {
-  struct int24 *p = (cd == 0 ? first_code : first_data);
+  struct int24 *p = get_first(cd);
   for (; ic > 0; ic--)
+  {
+    if (p == NULL)
+      return NULL;
     p = p->next;
+  }
 
   return p;
 }

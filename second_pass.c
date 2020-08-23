@@ -48,7 +48,6 @@ int second_pass(FILE *file)
       continue;
     if (strcmp(*(words + symbol), ".entry") == 0)
     {
-      printf("Found a .entry while ic val is %d\n", ic);
       struct nlist *np;
       np = lookup(*(words + symbol + 1));
       if (np != NULL)
@@ -67,6 +66,7 @@ int second_pass(FILE *file)
     {
       char arg1[32];
       char arg2[32];
+
       if (words_in_line == 4 + symbol)
       {
         /* The line is hopefully something like "LABEL: mov r1 , r2" */
@@ -86,15 +86,16 @@ int second_pass(FILE *file)
         /* Meaning there is (hopefully) a space between the arguments e.g "LABEL: mov r1, r2" */
         if (instring(',', *(words + 1 + symbol), strlen(*(words + 1 + symbol))))
         {
-          if (*(*(words + 1 + symbol) + strlen(*(words + 1 + symbol) - 1)) == ',') /* is the last char ',' */
+          if (*(*(words + 1 + symbol) + strlen(*(words + 1 + symbol)) - 1) == ',') /* is the last char ',' */
           {
             strncpy(arg1, *(words + 1 + symbol), strlen(*(words + 1 + symbol)) - 1);
+            arg1[strlen(*(words + 1 + symbol)) - 1] = '\0';
             strcpy(arg2, *(words + 2 + symbol));
           }
           else if (*(*(words + 2 + symbol)) == ',') /* is the first char of second arg ',' */
           {
             strcpy(arg1, *(words + 1 + symbol));
-            strcpy(arg1, *(words + 2 + symbol) + 1);
+            strcpy(arg2, *(words + 2 + symbol) + 1);
           }
         }
       }
@@ -103,9 +104,10 @@ int second_pass(FILE *file)
       are2 = 0;
       are3 = 0;
 
-      if (inarray(arg2, registers, registers_len))
+      int s = parse_symbol_noend(arg1);
+      if (inarray(arg1, registers, registers_len))
         --l;
-      else if (parse_symbol_noend(arg1))
+      else if (s)
       {
         struct nlist *symb = lookup(arg1);
         int val;
@@ -133,6 +135,7 @@ int second_pass(FILE *file)
         msb = (val >> 13);
         change_word(find_word_at(ic + 1 - 100, 0), msb, mb, lsb, 0);
       }
+
       if (inarray(arg2, registers, registers_len))
         --l;
       else if (parse_symbol_noend(arg2))
@@ -142,7 +145,7 @@ int second_pass(FILE *file)
 
         if (symb == NULL)
         {
-          error_clean(words, words_in_line, line_num, "Label isn't recognized", &rtn);
+          error_clean(words, words_in_line, line_num, "Symbol isn't recognized", &rtn);
           continue;
         }
 
@@ -150,7 +153,7 @@ int second_pass(FILE *file)
         {
           are3 = 1;
           val = 0;
-          add_external(arg1, ic + l - 1);
+          add_external(arg2, ic + l - 1);
         }
         else
         {
@@ -161,7 +164,9 @@ int second_pass(FILE *file)
         lsb = (val << 3) | are3;
         mb = (val >> 5);
         msb = (val >> 13);
-        change_word(find_word_at(ic + l - 101, 0), msb, mb, lsb, 0);
+        int index = ic + l - 101;
+        struct int24 *p = find_word_at(ic + l - 101, 0);
+        change_word(p, msb, mb, lsb, 0);
       }
 
       ic += l;
@@ -206,7 +211,8 @@ int second_pass(FILE *file)
         mb = (val >> 5);
         msb = (val >> 13);
 
-        change_word(find_word_at(ic + 1 - 100, 0), msb, mb, lsb, 0);
+        struct int24 *point = find_word_at(ic + 1 - 100, 0);
+        change_word(point, msb, mb, lsb, 0);
       }
       else if (parse_symbol_noend(arg))
       {
@@ -239,7 +245,8 @@ int second_pass(FILE *file)
 
       ic += l;
     }
+
+    free_memory(words, words_in_line);
   }
-  printf("second pass done\n");
   return rtn;
 }

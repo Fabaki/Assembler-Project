@@ -6,7 +6,6 @@
  * @param fname the name of the input file as received, used to name the output files
  */
 void create_output(char *fname);
-
 /**
  * loops through the symbol table and finds all "entry flagged" values, write them all to ent file
  * @param fname name of original input file
