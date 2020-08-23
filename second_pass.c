@@ -55,6 +55,7 @@ int second_pass(FILE *file)
       continue;
     if (strcmp(*(words + symbol), ".entry") == 0)
     {
+      printf("Found a .entry while ic val is %d\n", ic);
       struct nlist *np;
       np = lookup(*(words + symbol + 1));
       if (np != NULL)
@@ -139,7 +140,6 @@ int second_pass(FILE *file)
         msb = (val >> 13);
         change_word(find_word_at(ic + 1 - 100, 0), msb, mb, lsb, 0);
       }
-
       if (inarray(arg2, registers, registers_len))
         --l;
       else if (parse_symbol_noend(arg2))

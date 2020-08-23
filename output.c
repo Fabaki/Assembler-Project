@@ -35,18 +35,19 @@ void create_ent(char *fname, int len)
 
   struct nlist **table = get_symbol_table();
 
+    printf("output.c ->   ************ Going through symbol table\n");
   for (i = 0; i < HASHSIZE; i++) /* go through all 4 "cells" in symb table */
   {
     struct nlist *np = *(table + i);
     for (; np != NULL; np = np->next) /* for each cell check each symbol */
     {
+      printf("name: %s value: %d\n", np->name, np->value);
       if (np->has_type) {
           if (np->type == ENTRY) {
               if (!file_exists) {
                   entfile = fopen(entname, "w");
                   file_exists = TRUE;
               }
-              printf("Writing to ent with name %s and val %d\n", np->name, np->value);
               fprintf(entfile, "%s %07d\n", np->name, np->value);
           }
       }

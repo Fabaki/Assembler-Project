@@ -54,7 +54,6 @@ int first_pass(FILE *file)
     {
       int comma = TRUE; /* comma is to avoid double comma or no comma */
       int value;
-
       if (symbol)
         install(label_name, dc, DATA, FALSE, 0);
 
@@ -503,15 +502,17 @@ int first_pass(FILE *file)
   icf = ic;
   idf = dc;
 
+  struct nlist **table = get_symbol_table();
   for (i = 0; i < HASHSIZE; i++)
   {
-    p = symbol_table[i];
-    for (; p != NULL; p = p->next)
+      struct nlist *np = *(table + i);
+    for (; np != NULL; np = np->next)
     {
-      if (p->loc == DATA)
-        p->value += icf;
+      if (np->loc == DATA)
+        np->value += icf;
     }
   }
+
   printf("Got ICF: %d, IDF: %d\n", icf, idf);
   printf("Returning from first pass\n");
   return rtn;
