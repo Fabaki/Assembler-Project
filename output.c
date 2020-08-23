@@ -21,6 +21,7 @@ void create_output(char *fname)
 
 void create_ent(char *fname)
 {
+  /* generate the name that the .ent file would have */
   char *entname = (char*) calloc(strlen(fname) + 5, sizeof(char));
   char ent[] = ".ent";
   int file_exists = FALSE;
@@ -44,6 +45,7 @@ void create_ent(char *fname)
                   file_exists = TRUE;
               }
               fprintf(entfile, "%s %07d\n", np->name, np->value);
+              /* writes the name and the seven zeroes padded value */
           }
       }
     }
@@ -68,6 +70,7 @@ void create_ext(char *fname)
 
   extfile = fopen(extname, "w");
 
+  /* go thorugh linked list */
   for(;el != NULL; el = el->next)
     fprintf(extfile, "%s %07d\n", el->name, el->value);
 
@@ -87,6 +90,7 @@ void create_ob(char *fname)
 
   obfile = fopen(obname, "w");
 
+  /* adding icf and idf at the top */
   fprintf(obfile, "%d %d\n", icf - 100, idf);
 
   for (p = get_first(0), i = 100; p != NULL; p = p->next, i++)

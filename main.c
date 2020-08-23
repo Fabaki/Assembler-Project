@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
   int i;
   FILE *file = NULL;
 
+  /* go through each file name received as an argument and treat them individually */
   for (i = 1; i < argc; i++)
   {
     file = openfile(file, argv[i]);
