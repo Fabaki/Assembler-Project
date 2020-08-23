@@ -28,25 +28,6 @@ int instring(char c, char *word, int word_length)
   return FALSE;
 }
 
-int strsplit(char word[], int len, char splitter, char word1[], char word2[])
-{
-  int i;
-  for (i = 0; i < len; i++)
-  {
-    if (word[i] == splitter)
-    {
-      strncpy(word1, word, i);
-      word1[i] = '\0';
-      while (isspace(word[i+1]))
-        ++i;
-      strcpy(word2, &word[i+1]);
-      return 1;
-    }
-  }
-
-  return 0;
-}
-
 int *stoi(char s[])
 {
   int i = 0, sign;

@@ -18,7 +18,8 @@ int main(int argc, char *argv[])
       printf("Error: file doesn't exist\n");
       continue;
     }
-    if (first_pass(file)) { /*temporary fix*/
+    if (first_pass(file))
+    {
         fclose(file);
         file = openfile(file, argv[i]);
         second_pass(file);
@@ -30,8 +31,14 @@ int main(int argc, char *argv[])
       print_errors();
     }
     else
+    {
+      struct int24 *first_data = get_first(1);
+      struct int24 *first_code = get_first(0);
+
       create_output(argv[i]);
-    printf("\n");
+    }
+
+    fclose(file);
   }
   return 0;
 }

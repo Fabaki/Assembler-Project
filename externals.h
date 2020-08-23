@@ -10,7 +10,6 @@ struct extern_symbols
 
 static struct extern_symbols *first_extern;
 struct extern_symbols *add_external(char *name, int value);
-struct extern_symbols *find_extern(char *name);
 struct extern_symbols *get_first_ext();
 
 #endif

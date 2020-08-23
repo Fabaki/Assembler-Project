@@ -13,6 +13,7 @@
 int ic = 100, dc = 0;
 enum bool { FALSE, TRUE };
 
+
 int first_pass(FILE *file)
 {
   char line[LINE_LEN];
@@ -46,6 +47,7 @@ int first_pass(FILE *file)
 
     label_name = (char*) calloc(first_word_len, sizeof(char));
     strncpy(label_name, *(words), first_word_len - 1);
+    *(label_name + first_word_len - 1) = '\0';
 
     if (symbol && lookup(label_name) != NULL)
       error_clean(words, words_in_line, line_num, "Label already exists", &rtn);
@@ -66,6 +68,7 @@ int first_pass(FILE *file)
             error_clean(words, words_in_line, line_num, "Too many commans", &rtn);
             break;
           }
+          comma = TRUE;
           continue;
         }
 
@@ -124,10 +127,12 @@ int first_pass(FILE *file)
           }
           else /* in the case of ".data 1,2,3" */
           {
-            int source_i, dest_i; /* k is the starting index, j is the finishing */
-            for (dest_i = source_i = 0; dest_i < strlen(*(words + i)); dest_i++)
+            int source_i, dest_i, length_before; /* source_i is the starting index, dest_i is the finishing */
+            length_before = strlen(*(words + i)) + 1;
+
+            for (dest_i = source_i = 0; dest_i < length_before; dest_i++)
             {
-              if (*(*(words + i) + dest_i) == ',')
+              if (*(*(words + i) + dest_i) == ',' || *(*(words + i) + dest_i) == '\0')
               {
                 *(*(words + i) + dest_i) = '\0';
                 if (stoi(*(words + i) + source_i) != NULL)
@@ -138,7 +143,7 @@ int first_pass(FILE *file)
                   add_word(msb, mb, lsb, 1);
                   dc++;
 
-                  source_i = dest_i;
+                  source_i = ++dest_i;
                 }
                 else
                 {
@@ -147,12 +152,24 @@ int first_pass(FILE *file)
                 }
               }
             }
+            continue;
           }
         }
         else if (comma == FALSE)
         {
           error_clean(words, words_in_line, line_num, "Not enough commas", &rtn);
           break;
+        }
+        else
+        {
+          comma = FALSE;
+          if (stoi(*(words + i)) != NULL)
+            value = *(stoi(*(words + i)));
+          else
+          {
+            error_clean(words, words_in_line, line_num, "Non numeric character found", &rtn);
+            break;
+          }
         }
 
         lsb = value;
@@ -244,6 +261,7 @@ int first_pass(FILE *file)
           if (*(*(words + 1 + symbol) + strlen(*(words + 1 + symbol)) - 1) == ',') /* is the last char ',' */
           {
             strncpy(arg1, *(words + 1 + symbol), strlen(*(words + 1 + symbol)) - 1);
+            arg1[strlen(*(words + 1 + symbol)) - 1] = '\0';
             strcpy(arg2, *(words + 2 + symbol));
           }
           else if (*(*(words + 2 + symbol)) == ',') /* is the first char of second arg ',' */
@@ -344,6 +362,7 @@ int first_pass(FILE *file)
       msb = (opcode << 2) | src_type;
 
       add_word(msb, mb, lsb, 0);
+
       if (src_type == 0)
       {
         lsb = (value1 << 3) | are2;
@@ -371,7 +390,6 @@ int first_pass(FILE *file)
       }
 
       ic += l;
-      printf("IC was %d and is now %d\n", ic - l, ic);
     }
     else if (inarray(*(words + symbol), one_oprand, one_oprand_len))
     {
@@ -452,14 +470,13 @@ int first_pass(FILE *file)
         msb = (value1 >> 13);
         add_word(msb, mb, lsb, 0);
       }
-      else
+      else if (dest_reg == -1)
       {
         lsb = 0 | are2;
         add_word(0, 0, lsb, 0);
       }
 
       ic += l;
-      printf("IC was %d and is now %d\n", ic - l, ic);
     }
     else if (inarray(*(words + symbol), no_oprand, no_oprand_len))
     {
@@ -489,13 +506,14 @@ int first_pass(FILE *file)
       add_word(msb, mb, lsb, 0);
 
       ic += l;
-      printf("IC was %d and is now %d\n", ic - l, ic);
     }
     else
     {
       error_clean(words, words_in_line, line_num, "Command isn't recognized", &rtn);
       continue;
     }
+
+    free_memory(words, words_in_line);
   }
 
 
@@ -513,8 +531,6 @@ int first_pass(FILE *file)
     }
   }
 
-  printf("Got ICF: %d, IDF: %d\n", icf, idf);
-  printf("Returning from first pass\n");
   return rtn;
 }
 
@@ -538,9 +554,8 @@ int parse_symbol_noend(char *s)
 
   if (!isalpha(s[0]))
     return 0;
-  for (i = 1; isalnum(s[i]); i++)
-    if (i > 31)
-      return 0;
+  for (i = 1; isalnum(s[i]) && i < sizeof(s) / sizeof(char); i++)
+    ;
   return 1;
 }
 
