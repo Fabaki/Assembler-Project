@@ -4,7 +4,7 @@
 
 unsigned char *get_opcode_funct(char *cmd)
 {
-  unsigned char *opcode_func = (unsigned char *) malloc(sizeof(char) * 2);
+  unsigned char *opcode_func = (unsigned char *) calloc(2, sizeof(char));
   if (strcmp(cmd, "mov"))
   {
     *opcode_func = 0;

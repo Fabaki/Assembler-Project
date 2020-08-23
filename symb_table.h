@@ -20,5 +20,6 @@ static struct nlist *symbol_table[HASHSIZE];
 unsigned hash(char *s);
 struct nlist *lookup(char *name);
 struct nlist *install(char *name, int value, int loc, int has_type, int type);
+struct nlist **get_symbol_table();
 
 #endif

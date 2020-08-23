@@ -10,7 +10,7 @@ struct error *add_error(char *error, int line)
 
   ++error_count;
 
-  np = (struct error *) malloc(sizeof(struct error));
+  np = (struct error *) calloc(1, sizeof(struct error));
   if (np == NULL)
     return NULL;
 
@@ -27,7 +27,8 @@ struct error *add_error(char *error, int line)
 
   np->next = NULL;
   np->line = line;
-  error_copy = (char *) malloc(sizeof(char) * (strlen(error) + 1));
+  error_copy = (char *) calloc(strlen(error) + 1, sizeof(char));
+  strcpy(error_copy, error);
   np->error = error_copy;
 
   return np;
@@ -39,4 +40,9 @@ void print_errors()
 
   for (; p != NULL; p = p->next)
     printf("Error on line %d: %s.\n", p->line, p->error);
+}
+
+int get_error_count()
+{
+  return error_count;
 }

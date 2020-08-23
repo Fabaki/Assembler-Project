@@ -21,29 +21,34 @@ int second_pass(FILE *file)
   char line[LINE_LEN];
   int symbol; /* yes/no boolean to indicate if the line has a symbol */
   int line_num = 0;
+  unsigned char lsb, mb, msb;
 
+  printf("Started first pass!\n");
   while (get_line(line, LINE_LEN, file) != EOF)
   {
     int words_in_line = count_line_words(line, LINE_LEN);
-    char **words = (char **)malloc(words_in_line * sizeof(char *));
+    char **words = (char **) calloc(words_in_line, sizeof(char *));
+
+    if (words_in_line == 0)
+      continue;
     get_line_words(line, LINE_LEN, words);
     ++line_num;
 
-    if (parse_symbol(words[0])) /* if starts with has_symbol */
+    if (parse_symbol(*(words))) /* if starts with has_symbol */
       symbol = TRUE;
     else
       symbol = FALSE;
 
-    if (strcmp(words[symbol], ".data") == 0)
+    if (strcmp(*(words + symbol), ".data") == 0)
       continue;
-    if (strcmp(words[symbol], ".string") == 0)
+    if (strcmp(*(words + symbol), ".string") == 0)
       continue;
-    if (strcmp(words[symbol], ".extern") == 0)
+    if (strcmp(*(words + symbol), ".extern") == 0)
       continue;
-    if (strcmp(words[symbol], ".entry") == 0)
+    if (strcmp(*(words + symbol), ".entry") == 0)
     {
       struct nlist *np;
-      np = lookup(words[symbol+1]);
+      np = lookup(*(words + symbol + 1));
       if (np != NULL)
       {
         np->has_type = TRUE;
@@ -56,17 +61,17 @@ int second_pass(FILE *file)
       }
     }
 
-    if (inarray(words[symbol], two_oprands, two_oprands_len))
+    if (inarray(*(words + symbol), two_oprands, two_oprands_len))
     {
       char arg1[32];
       char arg2[32];
       if (words_in_line == 4 + symbol)
       {
         /* The line is hopefully something like "LABEL: mov r1 , r2" */
-        if (strcmp(words[2 + symbol], ",") == 0)
+        if (strcmp(*(words + 2 + symbol), ",") == 0)
         {
-          strcpy(arg1, words[1 + symbol]);
-          strcpy(arg2, words[3 + symbol]);
+          strcpy(arg1, *(words + 1 + symbol));
+          strcpy(arg2, *(words + 3 + symbol));
         }
         else
         {
@@ -77,17 +82,17 @@ int second_pass(FILE *file)
       else if (words_in_line == 3 + symbol)
       {
         /* Meaning there is (hopefully) a space between the arguments e.g "LABEL: mov r1, r2" */
-        if (instring(',', words[1 + symbol], strlen(words[1 + symbol])))
+        if (instring(',', *(words + 1 + symbol), strlen(*(words + 1 + symbol))))
         {
-          if (*(words[1 + symbol] + strlen(words[1 + symbol] - 1)) == ',') /* is the last char ',' */
+          if (*(*(words + 1 + symbol) + strlen(*(words + 1 + symbol) - 1)) == ',') /* is the last char ',' */
           {
-            strncpy(arg1, words[1 + symbol], strlen(words[1 + symbol]) - 1);
-            strcpy(arg2, words[2 + symbol]);
+            strncpy(arg1, *(words + 1 + symbol), strlen(*(words + 1 + symbol)) - 1);
+            strcpy(arg2, *(words + 2 + symbol));
           }
-          else if (*(words[2 + symbol]) == ',') /* is the first char of second arg ',' */
+          else if (*(*(words + 2 + symbol)) == ',') /* is the first char of second arg ',' */
           {
-            strcpy(arg1, words[1 + symbol]);
-            strcpy(arg1, words[2 + symbol] + 1);
+            strcpy(arg1, *(words + 1 + symbol));
+            strcpy(arg1, *(words + 2 + symbol) + 1);
           }
         }
       }
@@ -98,16 +103,17 @@ int second_pass(FILE *file)
 
       if (inarray(arg2, registers, registers_len))
         --l;
-      else if (parse_symbol(arg1))
+      else if (parse_symbol_noend(arg1))
       {
         struct nlist *symb = lookup(arg1);
+        int val;
+
         if (symb == NULL)
         {
           error_clean(words, words_in_line, line_num, "Symbol isn't recognized", &rtn);
           continue;
         }
 
-        int val;
         if (symb->has_type == TRUE && symb->type == EXTERN)
         {
           are2 = 1;
@@ -120,24 +126,25 @@ int second_pass(FILE *file)
           val = symb->value;
         }
 
-        unsigned char lsb = (val << 3) | are2;
-        unsigned char mb = (val >> 5);
-        unsigned char msb = (val >> 13);
+        lsb = (val << 3) | are2;
+        mb = (val >> 5);
+        msb = (val >> 13);
         change_word(find_word_at(ic + 1 - 100, 0), msb, mb, lsb, 0);
       }
 
       if (inarray(arg2, registers, registers_len))
         --l;
-      else if (parse_symbol(arg2))
+      else if (parse_symbol_noend(arg2))
       {
         struct nlist *symb = lookup(arg2);
+        int val;
+
         if (symb == NULL)
         {
           error_clean(words, words_in_line, line_num, "Label isn't recognized", &rtn);
           continue;
         }
 
-        int val;
         if (symb->has_type == TRUE && symb->type == EXTERN)
         {
           are3 = 1;
@@ -150,19 +157,20 @@ int second_pass(FILE *file)
           val = symb->value;
         }
 
-        unsigned char lsb = (val << 3) | are3;
-        unsigned char mb = (val >> 5);
-        unsigned char msb = (val >> 13);
+        lsb = (val << 3) | are3;
+        mb = (val >> 5);
+        msb = (val >> 13);
         change_word(find_word_at(ic + l - 101, 0), msb, mb, lsb, 0);
       }
 
       ic += l;
     }
-    else if (inarray(words[symbol], one_oprand, one_oprand_len))
+    else if (inarray(*(words + symbol), one_oprand, one_oprand_len))
     {
       char arg[32];
+
       if (words_in_line == 2 + symbol)
-        strcpy(arg, words[1 + symbol]);
+        strcpy(arg, *(words + 1 + symbol));
       else
       {
         error_clean(words, words_in_line, line_num, "Oprand count not met", &rtn);
@@ -176,36 +184,40 @@ int second_pass(FILE *file)
         --l;
       else if (arg[0] == '&')
       {
-        if (parse_symbol(arg + 1) == 0)
+        int val;
+        struct nlist *p;
+
+        if (parse_symbol_noend(arg + 1) == 0)
         {
           error_clean(words, words_in_line, line_num, "Illegal label", &rtn);
           continue;
         }
-        struct nlist *p = lookup(arg + 1);
+        p = lookup(arg + 1);
         if (p == NULL)
         {
           error_clean(words, words_in_line, line_num, "Label isn't recognized", &rtn);
           continue;
         }
 
-        int val = p->value - ic;
+        val = p->value - ic;
         are2 = 4;
-        unsigned char lsb = (val << 3) | are2;
-        unsigned char mb = (val >> 5);
-        unsigned char msb = (val >> 13);
+        lsb = (val << 3) | are2;
+        mb = (val >> 5);
+        msb = (val >> 13);
 
         change_word(find_word_at(ic + 1 - 100, 0), msb, mb, lsb, 0);
       }
-      else if (parse_symbol(arg))
+      else if (parse_symbol_noend(arg))
       {
         struct nlist *symb = lookup(arg);
+        int val;
+
         if (symb == NULL)
         {
           error_clean(words, words_in_line, line_num, "Symbol isn't recognized", &rtn);
           continue;
         }
 
-        int val;
         if (symb->has_type == TRUE && symb->type == EXTERN)
         {
           are2 = 1;
@@ -218,9 +230,9 @@ int second_pass(FILE *file)
           val = symb->value;
         }
 
-        unsigned char lsb = (val << 3) | are2;
-        unsigned char mb = (val >> 5);
-        unsigned char msb = (val >> 13);
+        lsb = (val << 3) | are2;
+        mb = (val >> 5);
+        msb = (val >> 13);
         change_word(find_word_at(ic + 1 - 100, 0), msb, mb, lsb, 0);
       }
 

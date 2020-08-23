@@ -6,17 +6,17 @@
 
 enum bool { FALSE, TRUE };
 
-int openfile(FILE *file, char *fname)
+FILE *openfile(FILE *file, char *fname)
 {
-  char* filename = (char*)malloc((strlen(fname)+4) * sizeof(char*));
+  char *filename = (char*) calloc(strlen(fname) + 4, sizeof(char));
   char ex[] = ".as";
 
   strcat(filename, fname);
   strcat(filename, ex);
-  if ((file = fopen(filename, "r")))
-    return TRUE;
-  else
-    return FALSE;
+
+  file = fopen(filename, "r");
+
+  return file;
 }
 
 int get_line(char *line, int max, FILE *file)
@@ -31,6 +31,7 @@ int count_line_words(char *line, int line_limit)
 {
   int i = 0;
   int words = 0;
+
   while (line[i] != EOF && line[i] != '\n' && line[i] != '\0' && line_limit > 0)
   {
     while (isspace(line[i]) && line_limit--)
@@ -42,7 +43,7 @@ int count_line_words(char *line, int line_limit)
     while ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
       i++;
 
-    if ( ( (line[i] == '\0' || line[i] == EOF || line[i] == '\n') ) && ( (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]) ) )
+    if ((line[i] == '\0' || line[i] == EOF || line[i] == '\n') &&  (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]))
       ++words;
 
     if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)
@@ -55,10 +56,12 @@ int count_line_words(char *line, int line_limit)
   return words;
 }
 
-int get_line_words(char *line, int line_limit, char *buffer[])
+int get_line_words(char *line, int line_limit, char **buffer)
 {
-  int i = 0;
-  int words = 0;
+  int i = 0, words = 0;
+  char backup, *newword;
+
+
   while (line[i] != EOF && line[i] != '\n' && line[i] != '\0' && line_limit > 0)
   {
     while (isspace(line[i]) && line_limit--)
@@ -69,21 +72,21 @@ int get_line_words(char *line, int line_limit, char *buffer[])
 
     if ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
     {
-      buffer[words] = &line[i];
+      *(buffer + words) = &line[i];
       i++;
     }
 
     while ((isalnum(line[i]) || ispunct(line[i])) && line_limit--)
       i++;
 
-    char backup = line[i];
+    backup = line[i];
     line[i] = '\0';
-    char *newword = (char *) malloc(strlen(buffer[words])+1);
-    strcpy(newword, buffer[words]);
-    buffer[words] = newword;
+    newword = (char *) calloc(strlen(*(buffer + words)) + 1, sizeof(char));
+    strcpy(newword, *(buffer + words));
+    *(buffer + words) = newword;
     line[i] = backup;
 
-    if ((line[i] == '\0' || line[i] == EOF || line[i] == '\n') && (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]))
+    if ((line[i] == '\0' || line[i] == EOF || line[i] == '\n') &&  (isalnum(line[i - 1]) || ispunct(line[i - 1])) || isspace(line[i]))
       ++words;
 
     if (line[i] == '\0' || line[i] == EOF || line[i] == '\n' || line_limit <= 0)

@@ -3,14 +3,12 @@
 
 struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, int cd)
 {
-  struct int24 *np;
-  unsigned result;
+  struct int24 *np, *first_func;
 
-  np = (struct int24 *) malloc(sizeof(struct int24));
+  np = (struct int24 *) calloc(1, sizeof(struct int24));
   if (np == NULL)
     return NULL;
 
-  struct int24 *first_func;
   if (cd == 0)
   {
     if (first_code == NULL)
@@ -55,4 +53,9 @@ struct int24 *find_word_at(unsigned int ic, int cd)
     p = p->next;
 
   return p;
+}
+
+struct int24 *get_first(int cd)
+{
+  return (cd == 0) ? first_code : first_data;
 }

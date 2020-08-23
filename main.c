@@ -6,16 +6,22 @@
 
 int main(int argc, char *argv[])
 {
+  int error_count = 0;
   int i;
   FILE *file = NULL;
+
   for (i = 1; i < argc; i++)
   {
-    if (!openfile(file, argv[i]))
+    file = openfile(file, argv[i]);
+    if (file == NULL)
+    {
+      printf("Error: file doesn't exist\n");
       continue;
+    }
     if (first_pass(file))
       second_pass(file);
 
-    if (error_count != 0)
+    if (get_error_count() != 0)
     {
       printf("Errors found at file %s:\n", argv[i]);
       print_errors();

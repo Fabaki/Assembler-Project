@@ -49,8 +49,8 @@ int strsplit(char word[], int len, char splitter, char word1[], char word2[])
 
 int *stoi(char s[])
 {
-  int i, sign;
-  int *result = (int *) malloc(sizeof(int));
+  int i = 0, sign;
+  int *result = (int *) calloc(1, sizeof(int));
 
   sign = (s[i] == '-') ? -1 : 1;
   if (s[i] == '+' || s[i] == '-')

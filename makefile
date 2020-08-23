@@ -1,7 +1,7 @@
 COMPILER = gcc
 FLAGS = -Wall -ansi -pedantic
 
-assembler: main.o errors.o externals.o first_pass.o input_manipulator.o memory_structure.o opcodes.o output.o second_pass.o string_manipulation.o symb_table.o
+assembler: clean main.o errors.o externals.o first_pass.o input_manipulator.o memory_structure.o opcodes.o output.o second_pass.o string_manipulation.o symb_table.o
 	$(COMPILER) -g $(FLAGS) main.o errors.o externals.o first_pass.o input_manipulator.o memory_structure.o opcodes.o output.o second_pass.o string_manipulation.o symb_table.o -o assembler
 
 main.o: main.c input_manipulator.h passes.h output.h errors.h

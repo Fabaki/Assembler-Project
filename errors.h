@@ -13,5 +13,6 @@ struct error
 struct error *error_list;
 struct error *add_error(char *error, int line);
 void print_errors();
+int get_error_count();
 
 #endif

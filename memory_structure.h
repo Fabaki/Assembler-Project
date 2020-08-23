@@ -13,5 +13,6 @@ static struct int24 *first_data;
 struct int24 *add_word(unsigned char msb, unsigned char mb, unsigned char lsb, int cd); /* all bytes, and code (0) or data (everthing else) */
 void change_word(struct int24 *p, unsigned char msb, unsigned char mb, unsigned char lsb, int cd);
 struct int24 *find_word_at(unsigned int ic, int cd);
+struct int24 *get_first(int cd);
 
 #endif

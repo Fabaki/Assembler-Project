@@ -12,6 +12,7 @@ enum bool { FALSE, TRUE };
 
 void create_output(char *fname)
 {
+  printf("Creating output for file |%s|!\n", fname);
   int len = strlen(fname);
 
   create_ob(fname, len);
@@ -21,20 +22,22 @@ void create_output(char *fname)
 
 void create_ent(char *fname, int len)
 {
-  char* entname = (char*)malloc((strlen(fname) + 5)*sizeof(char*));
+  char *entname = (char*) calloc(strlen(fname) + 5, sizeof(char));
   char ent[] = ".ent";
   int file_exists = FALSE;
+  FILE *entfile;
+  int i;
 
   strcat(entname, fname);
   strcat(entname, ent);
 
-  FILE *entfile;
+  printf("Final entry name |%s|\n", entname);
 
+  struct nlist **table = get_symbol_table();
 
-  int i;
   for (i = 0; i < HASHSIZE; i++) /* go through all 4 "cells" in symb table */
   {
-    struct nlist *np = symbol_table[i];
+    struct nlist *np = *(table + i);
     for (; np != NULL; np = np->next) /* for each cell check each symbol */
     {
       if (np->has_type)
@@ -45,7 +48,7 @@ void create_ent(char *fname, int len)
             entfile = fopen(entname, "w");
             file_exists = TRUE;
           }
-          fprintf(entfile, "%s %07d", np->name, np->value);
+          fprintf(entfile, "%s %07d\n", np->name, np->value);
         }
     }
   }
@@ -56,42 +59,50 @@ void create_ent(char *fname, int len)
 
 void create_ext(char *fname, int len)
 {
-  char* extname = (char*)malloc((strlen(fname) + 5)*sizeof(char*));
+  char *extname = (char*) calloc(strlen(fname) + 5, sizeof(char));
   char ext[] = ".ext";
   struct extern_symbols *el;
-  if (first_extern == NULL)
+  FILE *extfile;
+
+  if (get_first_ext() == NULL)
     return;
 
   strcat(extname, fname);
   strcat(extname, ext);
 
-  FILE *extfile;
+  printf("Final extern name |%s|\n", extname);
+
   extfile = fopen(extname, "w");
 
-  for(el = first_extern; el != NULL; el = el->next)
-    fprintf(extfile, "%s %07d", el->name, el->value);
+  for(el = get_first_ext(); el != NULL; el = el->next)
+    fprintf(extfile, "%s %07d\n", el->name, el->value);
 
   fclose(extfile);
 }
 
 void create_ob(char *fname, int len)
 {
-  char* obname = (char*)malloc((strlen(fname) + 4)*sizeof(char*));
+  char *obname = (char *) calloc(strlen(fname) + 4, sizeof(char));
   char ob[] = ".ob";
   static struct int24 *p;
   int i;
+  FILE *obfile;
 
   strcat(obname, fname);
   strcat(obname, ob);
 
-  FILE *obfile;
+  printf("Final name file: |%s|\n", obname);
+
   obfile = fopen(obname, "w");
 
-  fprintf(obfile, "%d %d", icf - 100, idf);
-  for (p = first_code, i = 100; p != NULL; p = p->next, i++)
-    fprintf(obfile, "%07d %06x", i, p->data);
-  for (p = first_data; p != NULL; p = p->next, i++)
-    fprintf(obfile, "%07d %06x", i, p->data);
+  fprintf(obfile, "%d %d\n", icf - 100, idf);
+
+  for (p = get_first(0), i = 100; p != NULL; p = p->next, i++)
+    fprintf(obfile, "%07d %06x\n", i, p->data);
+  for (p = get_first(1); p != NULL; p = p->next, i++)
+  {
+    fprintf(obfile, "%07d %06x\n", i, p->data);
+  }
 
   fclose(obfile);
 }
