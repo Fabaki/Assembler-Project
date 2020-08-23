@@ -43,19 +43,4 @@ static char *registers[] = {
 };
 static const int registers_len = 8;
 
-void free_memory(char *pointers[], int len);
-int parse_symbol(char *s);
-int parse_symbol_noend(char *s);
-void error_clean(char *words[], int len, int line, char *error, int *rtn);
-
-int first_pass(FILE *file);
-int icf, idf;
-
-/**
- * does everything regarding the second pass of the assembler
- * @param file - input file the pass reads from
- * @return TRUE if no errors were found during the pass; FALSE if
- */
-int second_pass(FILE *file);
-
 #endif

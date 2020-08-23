@@ -3,6 +3,18 @@
 #include <string.h>
 #include "errors.h"
 
+static int error_count = 0;
+
+/* struct representing an error string as a part of a node making a linked list */
+struct error
+{
+  struct error *next;
+  char *error;
+  int line;
+};
+
+struct error *error_list;
+
 struct error *add_error(char *error, int line)
 {
   struct error *np;

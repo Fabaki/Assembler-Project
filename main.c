@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "input_manipulator.h"
-#include "passes.h"
+#include "first_pass.h"
+#include "second_pass.h"
 #include "output.h"
 #include "errors.h"
 
 int main(int argc, char *argv[])
 {
-  int error_count = 0;
   int i;
   FILE *file = NULL;
 
@@ -32,12 +32,7 @@ int main(int argc, char *argv[])
       print_errors();
     }
     else
-    {
-      struct int24 *first_data = get_first(1);
-      struct int24 *first_code = get_first(0);
-
       create_output(argv[i]);
-    }
 
     fclose(file);
   }

@@ -9,6 +9,7 @@
 #include "opcodes.h"
 #include "symb_table.h"
 #include "errors.h"
+#include "first_pass.h"
 
 int ic = 100, dc = 0;
 enum bool { FALSE, TRUE };

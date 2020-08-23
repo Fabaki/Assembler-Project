@@ -7,6 +7,7 @@
 #include "memory_structure.h"
 #include "errors.h"
 #include "passes.h"
+#include "first_pass.h"
 
 enum bool { FALSE, TRUE };
 
