@@ -34,6 +34,15 @@ int second_pass(FILE *file)
     get_line_words(line, LINE_LEN, words);
     ++line_num;
 
+    /* debug */
+    int z;
+    printf("\nLine is: ");
+    for (z = 0; z < words_in_line; z++)
+        printf("%s ", words[z]);
+    printf("\n");
+
+    /* debug */
+
     if (parse_symbol(*(words))) /* if starts with has_symbol */
       symbol = TRUE;
     else
