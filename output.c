@@ -40,16 +40,16 @@ void create_ent(char *fname, int len)
     struct nlist *np = *(table + i);
     for (; np != NULL; np = np->next) /* for each cell check each symbol */
     {
-      if (np->has_type)
-        if (np->type == ENTRY)
-        {
-          if (!file_exists)
-          {
-            entfile = fopen(entname, "w");
-            file_exists = TRUE;
+      if (np->has_type) {
+          if (np->type == ENTRY) {
+              if (!file_exists) {
+                  entfile = fopen(entname, "w");
+                  file_exists = TRUE;
+              }
+              printf("Writing to ent with name %s and val %d\n", np->name, np->value);
+              fprintf(entfile, "%s %07d\n", np->name, np->value);
           }
-          fprintf(entfile, "%s %07d\n", np->name, np->value);
-        }
+      }
     }
   }
 
@@ -61,10 +61,10 @@ void create_ext(char *fname, int len)
 {
   char *extname = (char*) calloc(strlen(fname) + 5, sizeof(char));
   char ext[] = ".ext";
-  struct extern_symbols *el;
   FILE *extfile;
 
-  if (get_first_ext() == NULL)
+  struct extern_symbols *el = get_first_ext();
+  if (el == NULL)
     return;
 
   strcat(extname, fname);
@@ -74,8 +74,11 @@ void create_ext(char *fname, int len)
 
   extfile = fopen(extname, "w");
 
-  for(el = get_first_ext(); el != NULL; el = el->next)
+  for(;el != NULL; el = el->next)
+  {
+      printf("Print called in ext very cool\n");
     fprintf(extfile, "%s %07d\n", el->name, el->value);
+  }
 
   fclose(extfile);
 }

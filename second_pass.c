@@ -23,7 +23,7 @@ int second_pass(FILE *file)
   int line_num = 0;
   unsigned char lsb, mb, msb;
 
-  printf("Started first pass!\n");
+  printf("Started second pass!\n");
   while (get_line(line, LINE_LEN, file) != EOF)
   {
     int words_in_line = count_line_words(line, LINE_LEN);
@@ -38,7 +38,6 @@ int second_pass(FILE *file)
       symbol = TRUE;
     else
       symbol = FALSE;
-
     if (strcmp(*(words + symbol), ".data") == 0)
       continue;
     if (strcmp(*(words + symbol), ".string") == 0)
@@ -239,6 +238,6 @@ int second_pass(FILE *file)
       ic += l;
     }
   }
-
+  printf("second pass done\n");
   return rtn;
 }

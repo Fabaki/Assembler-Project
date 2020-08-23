@@ -18,8 +18,11 @@ int main(int argc, char *argv[])
       printf("Error: file doesn't exist\n");
       continue;
     }
-    if (first_pass(file))
-      second_pass(file);
+    if (first_pass(file)) { /*temporary fix*/
+        fclose(file);
+        file = openfile(file, argv[i]);
+        second_pass(file);
+    }
 
     if (get_error_count() != 0)
     {
